@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
+
             $table->string('name');
             $table->string('slug')->unique(); //Per poder identificar el rol pel nom, i no per ID
+            $table->string('color')->default('#CCCCCC');    //Pel calendari
+
             $table->timestamps();
         });
     }

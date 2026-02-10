@@ -13,8 +13,25 @@ return new class extends Migration
     {
         Schema::create('inscriptions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('')->constrained();
+
+            $table->string('name');
+            $table->string('surname');
+            $table->datetime('birthdate');
+            $table->string('email')->unique();
+            $table->string('phone');
+            $table->string('responsible')->nullable();
+
+            $table->boolean('dinner_attending')->default(false);
+
+            // Dades Xifrades, al·lèrgens ...
+            $table->text('dinner_nodtes')->nullable();
+            $table->string('dinner_qr_token')->nullable();
+
+            // Altres dades dinàmiques (se'n podrien afegir)
+            $table->jsonb('form_answers')->nullable();
+
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
