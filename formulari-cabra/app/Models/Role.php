@@ -15,6 +15,6 @@ class Role extends Model
 
     public function tasks()
     {
-        return $this->hasmany(Task::class);
+        return $this->hasMany(Task::class);
     }
 }
