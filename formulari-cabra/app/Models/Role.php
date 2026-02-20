@@ -3,18 +3,34 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Role extends Model
 {
-    protected $fillable = ['name', 'slug', 'color'];
+    protected $fillable = [
+        'name',
+        'slug',
+        'description',
+        'sort_order',
+        'is_active',
+    ];
 
-    public function inscriptions()
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
+    // Relacions
+
+    public function submissions(): BelongsToMany
     {
-        return $this->belongsToMany(Inscription::class);
+        return $this->belongsToMany(Submission::class)
+            ->withTimestamps();
     }
 
-    public function tasks()
+    // Scopes
+
+    public function scopeActive($query)
     {
-        return $this->hasMany(Task::class);
+        return $query->where('is_active', true)->orderBy('sort_order');
     }
 }

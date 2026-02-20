@@ -1,22 +1,35 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\MagicLinkController;
+use App\Http\Controllers\SubmissionController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Home'); // <--- Coincideix amb el nom del fitxer 'Home.vue'
-})->name('home');
+// Pàgina principal
+Route::get('/', fn () => redirect()->route('formulari'));
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Formulari de registre (no requereix auth)
+Route::get('/formulari', [SubmissionController::class, 'create'])
+    ->name('formulari');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+Route::post('/formulari', [SubmissionController::class, 'store'])
+    ->name('formulari.store');
+
+// Magic Link
+Route::get('/accedir', [MagicLinkController::class, 'showForm'])
+    ->name('magic-link.form');
+
+Route::post('/accedir', [MagicLinkController::class, 'send'])
+    ->name('magic-link.send');
+
+Route::get('/accedir/{token}', [MagicLinkController::class, 'verify'])
+    ->name('magic-link.verify')
+    ->middleware('signed'); // Laravel signed URL validation
+
+// Àrea privada (requereix magic link verificat)
+Route::middleware('submission.session')->group(function () {
+    Route::get('/la-meva-inscripcio', [SubmissionController::class, 'show'])
+        ->name('submission.show');
+
+    Route::patch('/la-meva-inscripcio', [SubmissionController::class, 'update'])
+        ->name('submission.update');
 });
-
-require __DIR__.'/auth.php';
