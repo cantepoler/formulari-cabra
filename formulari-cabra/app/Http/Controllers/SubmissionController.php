@@ -8,8 +8,10 @@ use App\Models\Task;
 use App\Mail\MagicLinkMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -30,64 +32,54 @@ class SubmissionController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            // Step 1 — Personal data
-            'full_name'      => ['required', 'string', 'max:255'],
-            'birth_date'     => ['required', 'date', 'before:today'],
-            'email'          => ['required', 'email', 'unique:submissions,email'],
-            'phone'          => ['nullable', 'string', 'max:20'],
-            'guardian_name'  => ['nullable', 'string', 'max:255'],
-            'guardian_phone' => ['nullable', 'string', 'max:20'],
-
-            // Step 2 — Roles
-            'role_ids'       => ['required', 'array', 'min:1'],
-            'role_ids.*'     => ['integer', 'exists:roles,id'],
-
-            // Step 3..6 — Dynamic role answers (free-form jsonb)
-            'form_answers'   => ['nullable', 'array'],
-
-            // Step 7 — Tasks
-            'task_ids'       => ['required', 'array', 'min:1'],
-            'task_ids.*'     => ['integer', 'exists:tasks,id'],
-
-            // Step 8 — Dinner
+            'full_name'        => ['required', 'string', 'max:255'],
+            'birth_date'       => ['required', 'date', 'before:today'],
+            'email'            => ['required', 'email', 'unique:submissions,email'],
+            'phone'            => ['nullable', 'string', 'max:20'],
+            'guardian_name'    => ['nullable', 'string', 'max:255'],
+            'guardian_phone'   => ['nullable', 'string', 'max:20'],
+            'role_ids'         => ['required', 'array', 'min:1'],
+            'role_ids.*'       => ['integer', 'exists:roles,id'],
+            'form_answers'     => ['nullable', 'array'],
+            'task_ids'         => ['required', 'array', 'min:1'],
+            'task_ids.*'       => ['integer', 'exists:tasks,id'],
             'attending_dinner' => ['required', 'boolean'],
             'dinner_notes'     => ['nullable', 'string', 'max:1000'],
         ]);
 
-        DB::transaction(function () use ($validated) {
-            // Create submission
+        // Guardar dades (transacció aïllada del mail)
+        $submission = DB::transaction(function () use ($validated) {
             $submission = Submission::create([
-                'full_name'       => $validated['full_name'],
-                'birth_date'      => $validated['birth_date'],
-                'email'           => $validated['email'],
-                'phone'           => $validated['phone'] ?? null,
-                'guardian_name'   => $validated['guardian_name'] ?? null,
-                'guardian_phone'  => $validated['guardian_phone'] ?? null,
-                'form_answers'    => $validated['form_answers'] ?? [],
-                'attending_dinner'=> $validated['attending_dinner'],
-                'dinner_notes'    => $validated['dinner_notes'] ?? null, // auto-encrypted
-                'status'          => 'submitted',
+                'full_name'        => $validated['full_name'],
+                'birth_date'       => $validated['birth_date'],
+                'email'            => $validated['email'],
+                'phone'            => $validated['phone'] ?? null,
+                'guardian_name'    => $validated['guardian_name'] ?? null,
+                'guardian_phone'   => $validated['guardian_phone'] ?? null,
+                'form_answers'     => $validated['form_answers'] ?? [],
+                'attending_dinner' => $validated['attending_dinner'],
+                'dinner_notes'     => $validated['dinner_notes'] ?? null, // auto-encrypted
+                'status'           => 'submitted',
             ]);
 
-            // Attach roles
             $submission->roles()->sync($validated['role_ids']);
 
-            // Attach tasks — validate capacity for each
             $taskIds = collect($validated['task_ids'])->filter(function ($taskId) {
                 $task = Task::find($taskId);
                 return $task && $task->hasCapacity();
             });
-
             $submission->tasks()->sync($taskIds);
 
-            // Generate QR token for dinner
             if ($submission->attending_dinner) {
-                $submission->update([
-                    'qr_token' => \Str::uuid(),
-                ]);
+                $submission->update(['qr_token' => Str::uuid()]);
             }
 
-            // Send magic link welcome email
+            return $submission;
+        });
+
+        // Enviar mail FORA de la transacció
+        // Així si el mail falla, la inscripció ja està guardada igualment.
+        try {
             $signedUrl = URL::temporarySignedRoute(
                 'magic-link.verify',
                 now()->addDays(30),
@@ -96,7 +88,16 @@ class SubmissionController extends Controller
 
             Mail::to($submission->email)
                 ->send(new MagicLinkMail($submission, $signedUrl));
-        });
+
+        } catch (\Exception $e) {
+            // Mail ha fallat però la inscripció s'ha guardat correctament.
+            // L'admin pot reenviar manualment des del panell.
+            Log::error('Magic link mail failed', [
+                'submission_id' => $submission->id,
+                'email'         => $submission->email,
+                'error'         => $e->getMessage(),
+            ]);
+        }
 
         return Inertia::render('Form/Confirmation');
     }
@@ -143,7 +144,6 @@ class SubmissionController extends Controller
         if (isset($validated['task_ids'])) {
             $taskIds = collect($validated['task_ids'])->filter(function ($taskId) use ($submission) {
                 $task = Task::find($taskId);
-                // Allow if already signed up OR has capacity
                 return $task && (
                         $submission->tasks->contains($taskId) || $task->hasCapacity()
                     );
