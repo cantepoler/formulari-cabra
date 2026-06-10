@@ -1,0 +1,10 @@
+{
+  "name": "backend-cabra",
+  "version": "1.0.0",
+  "description": "Backend per a la Cabra d'Or",
+  "main": "app.js",
+  "type": "module",
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}
