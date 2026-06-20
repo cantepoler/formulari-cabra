@@ -56,7 +56,7 @@
         "id": "t11_t3",
         "hora": "17:00",
         "nom": "Muntatge Parc",
-        "places_lliures": 5
+        "places_lliures": 4
       },
       {
         "id": "t11_t4",
