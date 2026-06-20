@@ -17,7 +17,7 @@ export default {
                 'Flauta', 'Clarinet Sib', 'Tarota/Oboè', 'Saxo Alt',
                 'Saxo Tenor', 'Saxo Baríton', 'Trompeta en Sib',
                 'Trompa en Fa', 'Trombó', 'Fiscorn', 'Tuba',
-                'Percussió', 'Pandero Quadrat', 'Banda/Contrabanda'
+                'Percussió', 'Pandero Quadrat'
             ],
             totsElsMoments: [
                 { id: 'm1', text: '10/08 (nit) - Baixada del castell - Banda', tipus: 'banda' },
@@ -42,10 +42,12 @@ export default {
     methods: {
         enviar() {
             this.$emit('continuar', {
-                instrument: this.instrument,
-                moments: this.moments,
-                necessitaPartitures: this.necessitaPartitures,
-                observacions: this.observacions
+                detallsBanda: {
+                    instrument: this.instrument,
+                    moments: this.moments,
+                    necessitaPartitures: this.necessitaPartitures,
+                    observacions: this.observacions
+                }
             });
         }
     }
@@ -90,22 +92,22 @@ export default {
         <div class="form-section">
             <label class="section-title">Necessites partitures?</label>
             <div class="radio-group">
-                <label class="radio-label" :class="{ 'radio-selected': necesitaPartitures === 'no' }">
-                    <input type="radio" value="no" v-model="necesitaPartitures">
+                <label class="radio-label" :class="{ 'radio-selected': necessitaPartitures === 'no' }">
+                    <input type="radio" value="no" v-model="necessitaPartitures">
                     <span>No! Encara guardo les dels anys anteriors / Me les sé totes!</span>
                 </label>
-                <label class="radio-label" :class="{ 'radio-selected': necesitaPartitures === 'noves' }">
-                    <input type="radio" value="noves" v-model="necesitaPartitures">
+                <label class="radio-label" :class="{ 'radio-selected': necessitaPartitures === 'noves' }">
+                    <input type="radio" value="noves" v-model="necessitaPartitures">
                     <span>Només les més noves…</span>
                 </label>
-                <label class="radio-label" :class="{ 'radio-selected': necesitaPartitures === 'si' }">
-                    <input type="radio" value="si" v-model="necesitaPartitures">
+                <label class="radio-label" :class="{ 'radio-selected': necessitaPartitures === 'si' }">
+                    <input type="radio" value="si" v-model="necessitaPartitures">
                     <span>Sí! Totes</span>
                 </label>
             </div>
         </div>
 
-        <div class="download-box" v-if="necesitaPartitures === 'noves' || necesitaPartitures === 'si'">
+        <div class="download-box" v-if="necessitaPartitures === 'noves' || necessitaPartitures === 'si'">
             <p>De moment, pots estudiar amb aquestes partitures en línia:</p>
             <a href="https://www.dropbox.com/scl/fo/2yxgqmnuotcy7s0uc9kav/h?rlkey=tsyggfifx2rzcmfunfvsy57v9&st=6nqmyk71&dl=0"
                 target="_blank" class="download-link">
@@ -123,7 +125,7 @@ export default {
 
         <div class="actions">
             <button @click="$emit('enrere')" class="btn-secondary">Enrere</button>
-            <button @click="enviar" :disabled="!instrument || moments.length === 0 || !necesitaPartitures"
+            <button @click="enviar" :disabled="!instrument || moments.length === 0 || !necessitaPartitures"
                 class="btn-primary">Continuar</button>
         </div>
     </div>
