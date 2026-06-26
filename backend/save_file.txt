@@ -3,78 +3,48 @@
   "tasques_logistiques": {
     "dia10": [
       {
-        "id": "t10_1",
+        "id": "d10_t1",
         "hora": "12:00",
         "nom": "Muntatge Coromines",
-        "places_lliures": 0
+        "places_lliures": 5,
+        "acte_public": "Matinades i Cercavila"
       },
       {
-        "id": "t10_t2",
-        "hora": "12:00",
-        "nom": "Muntatge Plaça",
-        "places_lliures": 2
-      },
-      {
-        "id": "t10_t3",
+        "id": "d10_t2",
         "hora": "17:00",
         "nom": "Muntatge Parc",
-        "places_lliures": 5
+        "places_lliures": 6,
+        "acte_public": "Jocs infantils a la plaça"
       },
       {
-        "id": "t10_t4",
-        "hora": "18:00",
-        "nom": "Suport Teatre",
-        "places_lliures": 0
-      },
-      {
-        "id": "t10_t5",
-        "hora": "21:00",
-        "nom": "Suport Coromines",
-        "places_lliures": 0
-      },
-      {
-        "id": "t10_t6",
+        "id": "d10_t3",
         "hora": "00:00",
         "nom": "Torn 1 Barra",
-        "places_lliures": 0
+        "places_lliures": 0,
+        "acte_public": "Concert de Festa Major"
       }
     ],
     "dia11": [
       {
-        "id": "t11_t1",
+        "id": "d11_t1",
         "hora": "12:00",
         "nom": "Muntatge Coromines",
-        "places_lliures": 5
+        "places_lliures": 5,
+        "acte_public": "Matinades i Cercavila"
       },
       {
-        "id": "t11_t2",
-        "hora": "12:00",
-        "nom": "Muntatge Plaça",
-        "places_lliures": 3
-      },
-      {
-        "id": "t11_t3",
+        "id": "d11_t2",
         "hora": "17:00",
         "nom": "Muntatge Parc",
-        "places_lliures": 4
+        "places_lliures": 6,
+        "acte_public": "Jocs infantils a la plaça"
       },
       {
-        "id": "t11_t4",
-        "hora": "18:00",
-        "nom": "Suport Teatre",
-        "places_lliures": 0
-      },
-      {
-        "id": "t11_t5",
-        "hora": "21:00",
-        "nom": "Suport Coromines",
-        "places_lliures": 2
-      },
-      {
-        "id": "t11_t6",
+        "id": "d11_t3",
         "hora": "00:00",
         "nom": "Torn 1 Barra",
-        "places_lliures": 0
+        "places_lliures": 0,
+        "acte_public": "Concert de Festa Major"
       }
     ]
   }

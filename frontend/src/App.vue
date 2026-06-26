@@ -26,11 +26,9 @@ export default {
   computed: {
     ...mapState(useFormStore, ['rols']),
 
-
     llistaPassos() {
       let passos = ['dades-personals']
-      const rolsActuals = this.rols || []
-      rolsActuals.forEach(rol => {
+      this.rols.forEach(rol => {
         passos.push(`pas-${rol}`)
       });
 
@@ -42,27 +40,16 @@ export default {
     pasActual() {
       return this.llistaPassos[this.pasIndex]
     },
-
-
   },
 
   methods: {
     enviarFormulari() {
       const store = useFormStore()
-
-      const dadesPerEnviar = {
-        dadesPersonals: store.personals,
-        rols: store.rols,
-        detallsBanda: store.detallsBanda,
-        tasquesTriades: store.tasquesTriades,
-        sopar: store.sopar,
-        edatCalculada: store.edat // Opcional, si li vols enviar l'edat directament calculada
-      }
-
+      
       const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dadesPerEnviar)
+        body: JSON.stringify(store.dadesPerEnviar)
       };
 
       console.log("Enviant dades al servidor...");

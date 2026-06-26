@@ -65,12 +65,18 @@ export default {
           <thead>
             <tr>
               <th class="col-hora">Hora</th>
+              <th class="col-public">Què fa el públic?</th>
               <th class="col-tasca">Tasca i Disponibilitat</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="task in tasks" :key="task.id">
               <td class="cell-hora">{{ task.hora }}</td>
+
+              <td class="cell-public">
+                <span class="public-event-badge">{{ task.acte_public || '-' }}</span>
+              </td>
+
               <td class="cell-tasca">
                 <button class="btn-task" :class="{ 'is-selected': isSeleccionada(task.id) }"
                   :disabled="task.places_lliures === 0 && !isSeleccionada(task.id)" @click="toggleTasca(task.id)">
@@ -174,6 +180,27 @@ export default {
   font-weight: 700;
   color: #4b5563;
   font-size: 0.95rem;
+}
+
+.col-public {
+  width: 35%;
+  /* Li donem un bon espai perquè els noms dels actes caben */
+}
+
+.cell-public {
+  padding-right: 16px;
+}
+
+.public-event-badge {
+  display: inline-block;
+  background-color: #f3f4f6;
+  /* Gris suau */
+  color: #4b5563;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-style: italic;
+  border: 1px dashed #d1d5db;
 }
 
 /* --- BOTONS DE TASCA --- */

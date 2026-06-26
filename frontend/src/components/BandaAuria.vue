@@ -24,12 +24,14 @@ export default {
 
   computed: {
     ...mapWritableState(useFormStore, ['detallsBanda']),
-    ...mapState(useFormStore, ['esMenor16']),
+    ...mapState(useFormStore, ['potTocarBanda']),
+
     momentsFiltrats() {
+      if (this.potTocarBanda === null) return this.totsElsMoments;
 
       return this.totsElsMoments.filter(moment => {
-        if (moment.tipus === 'banda' && this.esMenor16) return false;
-        if (moment.tipus === 'contrabanda' && !this.esMenor16) return false;
+        if (moment.tipus === 'banda' && !this.potTocarBanda) return false;
+        if (moment.tipus === 'contrabanda' && this.potTocarBanda) return false;
         return true;
       });
     }

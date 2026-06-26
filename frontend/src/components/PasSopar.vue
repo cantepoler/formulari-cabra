@@ -1,25 +1,18 @@
 <script>
+import { useFormStore } from '@/stores/formulari';
+import { mapWritableState } from 'pinia';
+
 export default {
     name: 'SoparMiddleware',
     emits: ['enviar', 'enrere'],
 
-    data() {
-        return {
-            volSopar: null,
-            alergies: [],
-            altresAlergiesText: ''
-        }
+    computed: {
+        ...mapWritableState(useFormStore, ['sopar'])
     },
 
     methods: {
         enviar() {
-            this.$emit('enviar', {
-                sopar: {
-                    sopar: this.volSopar,
-                    alergies: this.volSopar ? this.alergies : [],
-                    altresAlergies: (this.volSopar && this.alergies.includes('altres')) ? this.altresAlergiesText : ''
-                }
-            })
+            this.$emit('enviar')
         }
     }
 }
@@ -40,37 +33,37 @@ export default {
         <div class="form-section">
             <label class="section-title">Vindràs a sopar?</label>
             <div class="radio-group">
-                <label class="radio-label" :class="{ 'radio-selected': volSopar === true }">
-                    <input type="radio" :value="true" v-model="volSopar">
+                <label class="radio-label" :class="{ 'radio-selected': sopar.volSopar === true }">
+                    <input type="radio" :value="true" v-model="sopar.volSopar">
                     <span>Sí, m'hi quedo!</span>
                 </label>
-                <label class="radio-label" :class="{ 'radio-selected': volSopar === false }">
-                    <input type="radio" :value="false" v-model="volSopar">
+                <label class="radio-label" :class="{ 'radio-selected': sopar.volSopar === false }">
+                    <input type="radio" :value="false" v-model="sopar.volSopar">
                     <span>No, marxaré abans.</span>
                 </label>
             </div>
         </div>
 
-        <div class="form-section" v-if="volSopar === true">
+        <div class="form-section" v-if="sopar.volSopar === true">
             <label class="section-title">Tens alguna al·lèrgia o preferència alimentària?</label>
             <div class="checkbox-group">
-                <label class="checkbox-label" :class="{ 'checkbox-selected': alergies.includes('celiac') }">
-                    <input type="checkbox" value="celiac" v-model="alergies">
+                <label class="checkbox-label" :class="{ 'checkbox-selected': sopar.alergies.includes('celiac') }">
+                    <input type="checkbox" value="celiac" v-model="sopar.alergies">
                     <span class="checkbox-text">Celíac / Intolerància al gluten</span>
                 </label>
-                <label class="checkbox-label" :class="{ 'checkbox-selected': alergies.includes('vegetaria') }">
-                    <input type="checkbox" value="vegetaria" v-model="alergies">
+                <label class="checkbox-label" :class="{ 'checkbox-selected': sopar.alergies.includes('vegetaria') }">
+                    <input type="checkbox" value="vegetaria" v-model="sopar.alergies">
                     <span class="checkbox-text">Vegetarià / Vegà</span>
                 </label>
-                <label class="checkbox-label" :class="{ 'checkbox-selected': alergies.includes('altres') }">
-                    <input type="checkbox" value="altres" v-model="alergies">
+                <label class="checkbox-label" :class="{ 'checkbox-selected': sopar.alergies.includes('altres') }">
+                    <input type="checkbox" value="altres" v-model="sopar.alergies">
                     <span class="checkbox-text">Altres</span>
                 </label>
             </div>
 
-            <div class="extra-input" v-if="alergies.includes('altres')">
+            <div class="extra-input" v-if="sopar.alergies.includes('altres')">
                 <input type="text" class="custom-input" placeholder="Especifica la teva al·lèrgia..."
-                    v-model="altresAlergiesText">
+                    v-model="sopar.altresAlergiesText">
             </div>
         </div>
 
@@ -78,7 +71,7 @@ export default {
             <button @click="$emit('enrere')" class="btn-secondary">Enrere</button>
 
             <button @click="enviar"
-                :disabled="volSopar === null || (volSopar && alergies.includes('altres') && altresAlergiesText.trim() === '')"
+                :disabled="sopar.volSopar === null || (sopar.volSopar && sopar.alergies.includes('altres') && sopar.altresAlergiesText.trim() === '')"
                 class="btn-primary">
                 Confirmar Inscripció
             </button>
