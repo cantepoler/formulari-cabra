@@ -14,22 +14,22 @@ export default {
   },
 
   computed: {
-    // Utilitzem tasquesTriades perquè és el nom real que tens a Pinia
-    ...mapWritableState(useFormStore, ['tasquesTriades']),
+    // Utilitzem tasquesSeleccionades perquè és el nom real que tens a Pinia
+    ...mapWritableState(useFormStore, ['tasquesSeleccionades']),
   },
 
   methods: {
     toggleTasca(taskId) {
-      const index = this.tasquesTriades.indexOf(taskId);
+      const index = this.tasquesSeleccionades.indexOf(taskId);
       if (index === -1) {
-        this.tasquesTriades.push(taskId);
+        this.tasquesSeleccionades.push(taskId);
       } else {
-        this.tasquesTriades.splice(index, 1);
+        this.tasquesSeleccionades.splice(index, 1);
       }
     },
 
     isSeleccionada(taskId) {
-      return this.tasquesTriades.includes(taskId);
+      return this.tasquesSeleccionades.includes(taskId);
     },
 
     enviar() {
@@ -125,14 +125,14 @@ export default {
       </div>
     </div>
 
-    <div v-if="tasquesTriades.length > 0" class="seleccio-resum">
-      ✅ Has seleccionat {{ tasquesTriades.length }}
-      {{ tasquesTriades.length === 1 ? 'tasca' : 'tasques' }}
+    <div v-if="tasquesSeleccionades.length > 0" class="seleccio-resum">
+      ✅ Has seleccionat {{ tasquesSeleccionades.length }}
+      {{ tasquesSeleccionades.length === 1 ? 'tasca' : 'tasques' }}
     </div>
 
     <div class="actions">
       <button @click="$emit('enrere')" class="btn-secondary">Enrere</button>
-      <button @click="enviar" :disabled="tasquesTriades.length === 0" class="btn-primary">
+      <button @click="enviar" :disabled="tasquesSeleccionades.length === 0" class="btn-primary">
         Continuar
       </button>
     </div>
