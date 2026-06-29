@@ -5,6 +5,10 @@ import PasLogistica from './components/PasLogistica.vue';
 import PasSopar from './components/PasSopar.vue';
 import { useFormStore } from './stores/formulari.js';
 import { mapState } from 'pinia';
+import PasColaboradors from './components/PasColaboradors.vue';
+import PasDanses from './components/PasDanses.vue';
+import PasOrganitzacio from './components/PasOrganitzacio.vue';
+import PasTeatre from './components/PasTeatre.vue';
 
 export default {
   name: 'App',
@@ -12,7 +16,11 @@ export default {
     DadesPersonals,
     BandaAuria,
     PasLogistica,
-    PasSopar
+    PasSopar,
+    PasColaboradors,
+    PasDanses,
+    PasOrganitzacio,
+    PasTeatre
   },
 
   data() {
@@ -45,7 +53,7 @@ export default {
   methods: {
     enviarFormulari() {
       const store = useFormStore()
-      
+
       const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -115,9 +123,16 @@ export default {
 
         <DadesPersonals v-if="pasActual === 'dades-personals'" @continuar="seguent" />
         <BandaAuria v-if="pasActual === 'pas-banda'" @continuar="seguent" @enrere="anterior" />
+        <PasColaboradors v-if="pasActual === 'pas-colabos'" @continuar="seguent" @enrere="anterior" />
+        <PasOrganitzacio v-if="pasActual === 'pas-organitzacio'" @continuar="seguent" @enrere="anterior" />
+        <PasTeatre v-if="pasActual === 'pas-teatre'" @continuar="seguent" @enrere="anterior" />
+        <PasDanses v-if="pasActual === 'pas-danses'" @continuar="seguent" @enrere="anterior" />
+
+
         <PasLogistica v-if="pasActual === 'pas-logistica'" :aforaments="aforaments" @continuar="seguent"
           @enrere="anterior" />
         <PasSopar v-if="pasActual === 'pas-sopar'" @enviar="enviarFormulari" @enrere="anterior" />
+
       </div>
 
       <div v-else class="success-screen">

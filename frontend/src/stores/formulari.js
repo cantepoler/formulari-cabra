@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 
-// Aquest estat és accessible per tots els components del wizard
 export const useFormStore = defineStore('formulari', {
   state: () => ({
     personals: {
@@ -12,12 +11,30 @@ export const useFormStore = defineStore('formulari', {
       responsable: '',
     },
     rols: [],
+
     detallsBanda: {
       instrument: '',
       moments: [],
       necessitaPartitures: '',
       observacions: '',
     },
+    detallsOrganitzacio: {
+      comissions: [],
+      tornBarra: null,
+      observacions: '',
+    },
+    detallsDanses: {
+      ball: '',
+      talla: '',
+      observacions: '',
+    },
+    detallsTeatre: {
+      observacions: '',
+    },
+    detallsColaboradors: {
+      observacions: '',
+    },
+
     tasquesSeleccionades: [],
     sopar: {
       volSopar: null,
@@ -29,24 +46,19 @@ export const useFormStore = defineStore('formulari', {
   getters: {
     edat(state) {
       if (!state.personals.dataNaixement) return null;
-
       const avui = new Date();
       const naixement = new Date(state.personals.dataNaixement);
       let edat = avui.getFullYear() - naixement.getFullYear();
       const mesos = avui.getMonth() - naixement.getMonth();
-
-      if (mesos < 0 || (mesos === 0 && avui.getDate() < naixement.getDate())) {
-        edat--;
-      }
-
+      if (mesos < 0 || (mesos === 0 && avui.getDate() < naixement.getDate())) edat--;
       return edat;
     },
 
-    // Per sota dels 16 anys cal demanar les dades del tutor legal.
     esMenor16() {
       return this.edat !== null && this.edat < 16;
     },
 
+    // Llindar diferent: banda des dels 15, contrabanda per sota dels 15
     potTocarBanda() {
       if (this.edat === null) return null;
       return this.edat >= 15;
@@ -57,8 +69,7 @@ export const useFormStore = defineStore('formulari', {
         sopar: state.sopar.volSopar,
         alergies: state.sopar.volSopar ? state.sopar.alergies : [],
         altresAlergies: (state.sopar.volSopar && state.sopar.alergies.includes('altres'))
-          ? state.sopar.altresAlergiesText
-          : '',
+          ? state.sopar.altresAlergiesText : '',
       };
     },
 
@@ -67,6 +78,10 @@ export const useFormStore = defineStore('formulari', {
         dadesPersonals: state.personals,
         rols: state.rols,
         detallsBanda: state.detallsBanda,
+        detallsOrganitzacio: state.detallsOrganitzacio,
+        detallsDanses: state.detallsDanses,
+        detallsTeatre: state.detallsTeatre,
+        detallsColaboradors: state.detallsColaboradors,
         tasquesTriades: state.tasquesSeleccionades,
         sopar: this.soparPerEnviar,
         edatCalculada: this.edat,
@@ -74,6 +89,5 @@ export const useFormStore = defineStore('formulari', {
     },
   },
 
-  actions: {
-  },
+  actions: {},
 });
