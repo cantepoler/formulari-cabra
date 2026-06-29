@@ -191,22 +191,13 @@ export default {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 2px; /* Reduït perquè ja no hi ha barra física ocupant espai */
-  
-  /* Amaga la barra a Firefox i Internet Explorer/Edge vell */
-  scrollbar-width: none; 
-  -ms-overflow-style: none;
-}
-
-/* Amaga la barra a Chrome, Safari, Edge nou i Opera */
-.table-responsive::-webkit-scrollbar {
-  display: none;
+  padding-bottom: 10px;
 }
 
 .tasks-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 600px; /* Evita que s'aixafi massa al mòbil */
+/*   min-width: 600px; /* Evita que s'aixafi massa al mòbil */
 }
 
 .tasks-table th {
@@ -218,8 +209,13 @@ export default {
   letter-spacing: 0.05em;
 }
 
-.col-hora { width: 70px; }
-.col-public { width: 35%; }
+.col-hora { 
+  width: 50px; /* Reduït al mínim per a l'hora (ex: 12:00) */
+}
+
+.col-public { 
+  width: 25%; /* Abans era el 35%, el reduïm perquè el botó tingui més aire */
+}
 
 .tasks-table td {
   padding: 8px 0;
@@ -241,8 +237,8 @@ export default {
   display: inline-block;
   background-color: #f3f4f6;
   color: #4b5563;
-  font-size: 0.85rem;
-  padding: 6px 12px;
+  font-size: 0.75rem; /* Reduït de 0.85rem a 0.75rem */
+  padding: 4px 8px; /* Més compacte */
   border-radius: 6px;
   font-style: italic;
   border: 1px dashed #d1d5db;
@@ -256,13 +252,13 @@ export default {
   align-items: center;
   background-color: #ffffff;
   border: 1px solid #d1d5db;
-  padding: 12px 14px;
+  padding: 8px 10px; /* Reduït de 12px 14px a 8px 10px per guanyar molt espai */
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
   font-family: inherit;
   text-align: left;
-  min-height: 56px;
+  min-height: 48px; /* Una mica més baix per estilitzar */
 }
 
 /* Hover NORMAL */
@@ -297,13 +293,15 @@ export default {
 
 .task-name {
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.85rem; /* Reduït de 0.95rem a 0.85rem per al mòbil */
   color: #1f2937;
+  line-height: 1.2;
 }
 .btn-task.is-selected .task-name { color: #ffffff; }
 .btn-task:disabled .task-name { color: #9ca3af; }
-
-.task-places { font-size: 0.8rem; }
+.task-places { 
+  font-size: 0.75rem; /* Text de places una mica més petit i discret */
+}
 .places-ok { color: #6b7280; }
 .places-low { color: #dc2626; font-weight: 600; }
 .places-full { color: #9ca3af; }
@@ -374,4 +372,27 @@ export default {
   transition: all 0.2s ease;
 }
 .btn-secondary:hover { background-color: #f9fafb; border-color: #9ca3af; color: #1f2937; }
+
+
+@media (max-width: 540px) {
+  .tasks-table th {
+    font-size: 0.75rem; /* Capçaleres de taula més petites */
+  }
+  .cell-hora {
+    font-size: 0.85rem; /* Hora un pel més petita */
+  }
+  .check-icon {
+    width: 22px;  /* El xec de seleccionat es fa una mica més petit */
+    height: 22px;
+    font-size: 0.8rem;
+  }
+  .actions { 
+    flex-direction: column-reverse; 
+    gap: 10px; 
+  }
+  .btn-primary, .btn-secondary { 
+    width: 100%; 
+    text-align: center; 
+  }
+}
 </style>
