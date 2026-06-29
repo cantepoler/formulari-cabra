@@ -191,7 +191,16 @@ export default {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 10px;
+  padding-bottom: 2px; /* Reduït perquè ja no hi ha barra física ocupant espai */
+  
+  /* Amaga la barra a Firefox i Internet Explorer/Edge vell */
+  scrollbar-width: none; 
+  -ms-overflow-style: none;
+}
+
+/* Amaga la barra a Chrome, Safari, Edge nou i Opera */
+.table-responsive::-webkit-scrollbar {
+  display: none;
 }
 
 .tasks-table {

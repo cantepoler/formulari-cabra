@@ -140,7 +140,6 @@ export default {
         <h2>Inscripció completada!</h2>
         <div class="festa-divider festa-divider--small" aria-hidden="true"></div>
         <p>Moltes gràcies per apuntar-te a la Cabra d'Or 2026. Ens veurem molt aviat a la plaça!</p>
-        <button class="btn-restart" @click="window.location.reload()">Fer una nova inscripció</button>
       </div>
 
     </div>
@@ -269,24 +268,6 @@ body {
   font-size: 1.1rem;
   line-height: 1.5;
   margin-bottom: 30px;
-}
-
-.btn-restart {
-  background-color: var(--cabra-gold-50, #fffbeb);
-  color: var(--cabra-gold-700, #92400e);
-  border: 1px solid var(--cabra-gold-200, #fde68a);
-  padding: 12px 24px;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-restart:hover {
-  background-color: var(--cabra-gold-100, #fef3c7);
-  border-color: var(--cabra-gold-400, #f59e0b);
-  color: var(--cabra-gold-600, #b45309);
 }
 
 @keyframes fadeIn {
