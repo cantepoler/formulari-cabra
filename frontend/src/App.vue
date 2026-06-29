@@ -105,6 +105,7 @@ export default {
   <div class="page-shell">
 
     <header class="festa-header">
+      <p class="festa-kicker">✦ Si voleu posar algo ✦</p>
       <h1 class="festa-title">Cabra d'Or <span class="festa-year">2026</span></h1>
       <p class="festa-subtitle">Formulari de participació</p>
       <div class="festa-divider" aria-hidden="true"></div>
@@ -143,6 +144,8 @@ export default {
       </div>
 
     </div>
+
+    <p class="festa-footer">🔥 Si voleu posar algo 🔥</p>
 
   </div>
 </template>
