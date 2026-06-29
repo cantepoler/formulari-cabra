@@ -14,32 +14,27 @@ export default {
   },
 
   computed: {
-    ...mapWritableState(useFormStore, ['tasquesSeleccionades']),
+    // Utilitzem tasquesTriades perquè és el nom real que tens a Pinia
+    ...mapWritableState(useFormStore, ['tasquesTriades']),
   },
 
   methods: {
     toggleTasca(taskId) {
-      const index = this.tasquesSeleccionades.indexOf(taskId);
+      const index = this.tasquesTriades.indexOf(taskId);
       if (index === -1) {
-        this.tasquesSeleccionades.push(taskId);
+        this.tasquesTriades.push(taskId);
       } else {
-        this.tasquesSeleccionades.splice(index, 1);
+        this.tasquesTriades.splice(index, 1);
       }
     },
 
     isSeleccionada(taskId) {
-      return this.tasquesSeleccionades.includes(taskId);
+      return this.tasquesTriades.includes(taskId);
     },
 
     enviar() {
       this.$emit('continuar');
-    },
-
-    formatDia(dia) {
-      // 'dia10' → 'Dia 10 d\'agost' / 'dia11' → 'Dia 11 d\'agost'
-      const num = dia.replace('dia', '');
-      return `Dia ${num} d'agost`;
-    },
+    }
   },
 
   mounted() {
@@ -72,58 +67,72 @@ export default {
       </p>
     </div>
 
-    <!-- Estat de càrrega -->
     <div v-if="carregant" class="loading-state">
       <div class="spinner"></div>
       <p>Carregant l'horari...</p>
     </div>
 
-    <!-- Error de càrrega -->
     <div v-else-if="errorCarrega" class="error-state">
       <p>⚠️ No s'ha pogut carregar l'horari. Revisa la teva connexió i torna-ho a intentar.</p>
     </div>
 
-    <!-- Horari -->
     <div v-else class="tasks-grid">
       <div v-for="(tasks, day) in aforaments.tasques_logistiques" :key="day" class="day-section">
-        <h3 class="day-title">{{ formatDia(day) }}</h3>
+        <h3 class="day-title">{{ day }}</h3>
 
-        <div class="tasks-list">
-          <div v-for="task in tasks" :key="task.id" class="task-row">
-            <span class="task-hora">{{ task.hora }}</span>
-            <button
-              class="btn-task"
-              :class="{ 'is-selected': isSeleccionada(task.id) }"
-              :disabled="task.places_lliures === 0 && !isSeleccionada(task.id)"
-              @click="toggleTasca(task.id)">
-              <div class="task-info">
-                <span class="task-name">{{ task.nom }}</span>
-                <span class="task-places"
-                  :class="{
-                    'places-ok': task.places_lliures > 2,
-                    'places-low': task.places_lliures <= 2 && task.places_lliures > 0,
-                    'places-full': task.places_lliures === 0
-                  }">
-                  <template v-if="task.places_lliures === 0">Complet</template>
-                  <template v-else>{{ task.places_lliures }} places lliures</template>
-                </span>
-              </div>
-              <span v-if="isSeleccionada(task.id)" class="check-icon" aria-hidden="true">✓</span>
-            </button>
-          </div>
+        <div class="table-responsive">
+          <table class="tasks-table">
+            <thead>
+              <tr>
+                <th class="col-hora">Hora</th>
+                <th class="col-public">Què fa el públic?</th>
+                <th class="col-tasca">Tasca i Disponibilitat</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="task in tasks" :key="task.id">
+                <td class="cell-hora">{{ task.hora }}</td>
+
+                <td class="cell-public">
+                  <span class="public-event-badge">{{ task.acte_public || '-' }}</span>
+                </td>
+
+                <td class="cell-tasca">
+                  <button
+                    class="btn-task"
+                    :class="{ 'is-selected': isSeleccionada(task.id) }"
+                    :disabled="task.places_lliures === 0 && !isSeleccionada(task.id)"
+                    @click="toggleTasca(task.id)">
+                    <div class="task-info">
+                      <span class="task-name">{{ task.nom }}</span>
+                      <span class="task-places"
+                        :class="{
+                          'places-ok': task.places_lliures > 2,
+                          'places-low': task.places_lliures <= 2 && task.places_lliures > 0,
+                          'places-full': task.places_lliures === 0
+                        }">
+                        <template v-if="task.places_lliures === 0">Complet</template>
+                        <template v-else>{{ task.places_lliures }} places lliures</template>
+                      </span>
+                    </div>
+                    <span v-if="isSeleccionada(task.id)" class="check-icon" aria-hidden="true">✓</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
 
-    <!-- Resum selecció -->
-    <div v-if="tasquesSeleccionades.length > 0" class="seleccio-resum">
-      ✅ Has seleccionat {{ tasquesSeleccionades.length }}
-      {{ tasquesSeleccionades.length === 1 ? 'tasca' : 'tasques' }}
+    <div v-if="tasquesTriades.length > 0" class="seleccio-resum">
+      ✅ Has seleccionat {{ tasquesTriades.length }}
+      {{ tasquesTriades.length === 1 ? 'tasca' : 'tasques' }}
     </div>
 
     <div class="actions">
       <button @click="$emit('enrere')" class="btn-secondary">Enrere</button>
-      <button @click="enviar" :disabled="tasquesSeleccionades.length === 0" class="btn-primary">
+      <button @click="enviar" :disabled="tasquesTriades.length === 0" class="btn-primary">
         Continuar
       </button>
     </div>
@@ -166,37 +175,73 @@ export default {
 .error-state { background-color: #fef2f2; color: #b91c1c; }
 .error-state p { margin: 0; }
 
-/* Dies i tasques */
-.day-section { margin-bottom: 28px; }
+/* Dies i Taula */
+.day-section { margin-bottom: 30px; }
 .day-title {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: #1f2937;
   border-bottom: 2px solid #e5e7eb;
   padding-bottom: 8px;
-  margin: 0 0 14px 0;
+  margin: 0 0 16px 0;
+  text-transform: capitalize; /* Converteix "dia10" a "Dia10" */
 }
 
-.tasks-list { display: flex; flex-direction: column; gap: 8px; }
-
-.task-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 10px;
 }
 
-.task-hora {
-  font-size: 0.85rem;
-  font-weight: 700;
+.tasks-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px; /* Evita que s'aixafi massa al mòbil */
+}
+
+.tasks-table th {
+  text-align: left;
+  padding: 0 0 10px 0;
   color: #6b7280;
-  width: 52px;
-  flex-shrink: 0;
-  text-align: right;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-/* ---- BOTÓ DE TASCA (amb fix del hover quan ja està seleccionat) ---- */
+.col-hora { width: 70px; }
+.col-public { width: 35%; }
+
+.tasks-table td {
+  padding: 8px 0;
+  vertical-align: middle;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.cell-hora {
+  font-weight: 700;
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+.cell-public {
+  padding-right: 16px;
+}
+
+.public-event-badge {
+  display: inline-block;
+  background-color: #f3f4f6;
+  color: #4b5563;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-style: italic;
+  border: 1px dashed #d1d5db;
+}
+
+/* ---- BOTÓ DE TASCA ---- */
 .btn-task {
-  flex: 1;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -211,7 +256,7 @@ export default {
   min-height: 56px;
 }
 
-/* Hover NORMAL (no seleccionat, no deshabilitat) */
+/* Hover NORMAL */
 .btn-task:hover:not(:disabled):not(.is-selected) {
   background-color: #f9fafb;
   border-color: #9ca3af;
@@ -223,7 +268,8 @@ export default {
   background-color: #f59e0b;
   border-color: #d97706;
 }
-/* Hover quan JA ESTÀ SELECCIONAT → color daurat més fosc (indica que es pot deseleccionar) */
+
+/* Hover quan JA ESTÀ SELECCIONAT */
 .btn-task.is-selected:hover {
   background-color: #d97706;
   border-color: #b45309;
@@ -319,12 +365,4 @@ export default {
   transition: all 0.2s ease;
 }
 .btn-secondary:hover { background-color: #f9fafb; border-color: #9ca3af; color: #1f2937; }
-
-/* Responsive */
-@media (max-width: 540px) {
-  .task-hora { width: 42px; font-size: 0.8rem; }
-  .task-name { font-size: 0.9rem; }
-  .actions { flex-direction: column-reverse; gap: 10px; }
-  .btn-primary, .btn-secondary { width: 100%; text-align: center; }
-}
 </style>
