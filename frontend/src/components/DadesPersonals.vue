@@ -113,9 +113,14 @@ export default {
       </div>
 
       <div class="form-group">
-        <label class="field-label">Telèfon <span class="required">*</span></label>
-        <input type="tel" placeholder="600 000 000" v-model="personals.telefon"
-          :class="{ 'input-error': err('telefon') }">
+        <label class="field-label">
+          {{ esMenor16 ? 'Telèfon del responsable' : 'Telèfon' }} <span class="required">*</span>
+        </label>
+        <input type="tel" :placeholder="esMenor16 ? 'Telèfon del responsable' : '600 000 000'"
+          v-model="personals.telefon" :class="{ 'input-error': err('telefon') }">
+        <span v-if="esMenor16" class="field-hint">
+          Com que ets menor de 16 anys, demanem el telèfon del teu responsable per poder contactar en cas necessari.
+        </span>
         <span v-if="err('telefon')" class="error-msg">{{ errors.telefon }}</span>
       </div>
 
@@ -251,6 +256,12 @@ input:focus {
   font-size: 0.8rem;
   color: #dc2626;
   margin-top: 2px;
+}
+.field-hint {
+  font-size: 0.8rem;
+  color: #92400e;
+  margin-top: 2px;
+  line-height: 1.4;
 }
 
 /* Caixa d'alerta menor */

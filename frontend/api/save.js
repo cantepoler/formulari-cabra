@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { validarInscripcio } from './_validation.js';
 
 const supabase = createClient(
     process.env.SUPABASE_URL,
@@ -11,8 +12,17 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Mètode no permès' });
     }
 
-    console.log("Rebuda petició de:", req.body.dadesPersonals?.nom);
     const inscripcio = req.body;
+
+    // --- VALIDACIÓ ---
+    // Mai ens refiem del que arriba del client: comprovem la forma i el
+    // contingut de les dades abans de fer cap operació a la base de dades.
+    const errors = validarInscripcio(inscripcio);
+    if (errors.length > 0) {
+        return res.status(400).json({ error: 'Dades no vàlides', detalls: errors });
+    }
+
+    console.log("Rebuda petició de:", inscripcio.dadesPersonals?.nom);
     const tasques_demanades = inscripcio.tasquesTriades || [];
 
     try {
@@ -51,8 +61,16 @@ export default async function handler(req, res) {
                 responsable_legal: inscripcio.dadesPersonals.responsable || null,
                 rols: inscripcio.rols || [],
                 tasques_logistiques: tasques_demanades,
+                // Totes les dades específiques de cada rol es guarden aquí.
+                // Abans només es guardaven 'banda' i 'sopar' — la resta de
+                // pestanyes (organització, danses, teatre, col·laboradors)
+                // s'enviaven però mai arribaven a desar-se.
                 detalls_rols: {
-                    banda: inscripcio.detallsBanda,
+                    organitzacio: inscripcio.detallsOrganitzacio || null,
+                    banda: inscripcio.detallsBanda || null,
+                    teatre: inscripcio.detallsTeatre || null,
+                    danses: inscripcio.detallsDanses || null,
+                    colaboradors: inscripcio.detallsColaboradors || null,
                     sopar: inscripcio.sopar
                 }
             });
