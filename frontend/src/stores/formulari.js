@@ -12,6 +12,12 @@ export const useFormStore = defineStore('formulari', {
     },
     rols: [],
 
+    consentiments: {
+      tractamentDades: false,
+      dretImatge: false,
+      responsabilitatMenors: false,
+    },
+
     detallsBanda: {
       instrument: '',
       moments: [],
@@ -20,8 +26,6 @@ export const useFormStore = defineStore('formulari', {
     },
     detallsOrganitzacio: {
       comissions: [],
-      tornBarra: null,
-      observacions: '',
     },
     detallsDanses: {
       ball: '',
@@ -29,10 +33,10 @@ export const useFormStore = defineStore('formulari', {
       observacions: '',
     },
     detallsTeatre: {
-      observacions: '',
+      necessitatConcreta: '',
     },
     detallsColaboradors: {
-      observacions: '',
+      comColLabora: '',
     },
 
     tasquesSeleccionades: [],
@@ -54,14 +58,16 @@ export const useFormStore = defineStore('formulari', {
       return edat;
     },
 
-    esMenor16() {
-      return this.edat !== null && this.edat < 16;
-    },
+    esMenor16() { return this.edat !== null && this.edat < 16; },
+    esMenor14() { return this.edat !== null && this.edat < 14; },
 
-    // Llindar diferent: banda des dels 15, contrabanda per sota dels 15
+    // >= 15: banda completa | 13-14: contrabanda però poden fer cercavila
     potTocarBanda() {
       if (this.edat === null) return null;
       return this.edat >= 15;
+    },
+    potTocarCercavila() {
+      return this.edat !== null && this.edat >= 13 && this.edat < 15;
     },
 
     soparPerEnviar(state) {
@@ -77,6 +83,7 @@ export const useFormStore = defineStore('formulari', {
       return {
         dadesPersonals: state.personals,
         rols: state.rols,
+        consentiments: state.consentiments,
         detallsBanda: state.detallsBanda,
         detallsOrganitzacio: state.detallsOrganitzacio,
         detallsDanses: state.detallsDanses,

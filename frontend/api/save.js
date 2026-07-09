@@ -65,6 +65,7 @@ export default async function handler(req, res) {
                 // Abans només es guardaven 'banda' i 'sopar' — la resta de
                 // pestanyes (organització, danses, teatre, col·laboradors)
                 // s'enviaven però mai arribaven a desar-se.
+            consentiments: inscripcio.consentiments || {},
                 detalls_rols: {
                     organitzacio: inscripcio.detallsOrganitzacio || null,
                     banda: inscripcio.detallsBanda || null,
@@ -73,7 +74,7 @@ export default async function handler(req, res) {
                     colaboradors: inscripcio.detallsColaboradors || null,
                     sopar: inscripcio.sopar
                 }
-            });
+	    });
 
         if (errorInscripcio) throw errorInscripcio;
 

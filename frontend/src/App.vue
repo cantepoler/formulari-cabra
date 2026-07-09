@@ -35,10 +35,12 @@ export default {
     ...mapState(useFormStore, ['rols']),
 
     llistaPassos() {
-      let passos = ['dades-personals']
-      this.rols.forEach(rol => {
-        passos.push(`pas-${rol}`)
-      });
+	const ROLS_AMB_PESTANYA = new Set(['organitzacio', 'banda', 'teatre', 'danses', 'colabos'])
+	let passos = ['dades-personals']
+	this.rols.forEach(rol => {
+	    if (ROLS_AMB_PESTANYA.has(rol))
+		passos.push(`pas-${rol}`)
+	});  
 
       passos.push('pas-logistica')
       passos.push('pas-sopar')
@@ -105,7 +107,6 @@ export default {
   <div class="page-shell">
 
     <header class="festa-header">
-      <p class="festa-kicker">✦ Si voleu posar algo ✦</p>
       <h1 class="festa-title">Cabra d'Or <span class="festa-year">2026</span></h1>
       <p class="festa-subtitle">Formulari de participació</p>
       <div class="festa-divider" aria-hidden="true"></div>
@@ -144,7 +145,7 @@ export default {
 
     </div>
 
-    <p class="festa-footer">🔥 Si voleu posar algo 🔥</p>
+    <p class="festa-footer">Associació La Cabra d'Or</p>
 
   </div>
 </template>
