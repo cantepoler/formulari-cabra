@@ -33,9 +33,9 @@ export default {
     </div>
 
     <div class="form-section">
-      <label class="section-title">Vols afegir alguna cosa?</label>
-      <textarea v-model="detallsTeatre.observacions"
-        placeholder="Disponibilitat, experiència prèvia, paper que t'agradaria fer, o qualsevol altra cosa..."
+      <label class="section-title">Cal alguna cosa concreta?</label>
+      <textarea v-model="detallsTeatre.necessitatConcreta"
+        placeholder="Material, vestuari, recursos, o qualsevol altra necessitat específica..."
         rows="5" class="custom-textarea"></textarea>
     </div>
 

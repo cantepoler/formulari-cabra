@@ -7,6 +7,9 @@ export default {
 
   computed: {
     ...mapWritableState(useFormStore, ['detallsColaboradors']),
+    potContinuar() {
+      return this.detallsColaboradors.comColLabora?.trim() !== '';
+    },
   },
 
   methods: {
@@ -34,15 +37,15 @@ export default {
     </div>
 
     <div class="form-section">
-      <label class="section-title">Vols afegir alguna cosa?</label>
-      <textarea v-model="detallsColaboradors.observacions"
-        placeholder="Digue'ns quina disponibilitat tens, en què prefereixes ajudar, o qualsevol cosa que vulguis que sapiguem..."
+      <label class="section-title">Com col·labores? <span class="required">*</span></label>
+      <textarea v-model="detallsColaboradors.comColLabora"
+        placeholder="Explica en què col·labores o vols col·laborar a la festa..."
         rows="5" class="custom-textarea"></textarea>
     </div>
 
     <div class="actions">
       <button @click="$emit('enrere')" class="btn-secondary">Enrere</button>
-      <button @click="enviar" class="btn-primary">Continuar</button>
+      <button @click="enviar" :disabled="!potContinuar" class="btn-primary">Continuar</button>
     </div>
   </div>
 </template>
@@ -64,6 +67,7 @@ export default {
 
 .form-section { display: flex; flex-direction: column; gap: 10px; }
 .section-title { font-size: 1.05rem; color: #374151; font-weight: 600; margin: 0; }
+.required { color: #ef4444; }
 
 .custom-textarea {
   width: 100%;

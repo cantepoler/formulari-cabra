@@ -7,6 +7,18 @@ export default {
 
   data() {
     return {
+      ballsDisponibles: [
+        'Cabretes',
+        'Portadors/es Xics',
+        'Cintes',
+        'Guerrers Àuris (Jovenalla)',
+        'Pastors',
+        'Portadors/es',
+        'Trempats i Enxirinades',
+        'Cabrones',
+        'Portadors/es veteranes',
+        'Mort',
+      ],
       talles: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     }
   },
@@ -43,8 +55,10 @@ export default {
 
     <div class="form-section">
       <label class="section-title">Quin ball fas? <span class="required">*</span></label>
-      <input type="text" placeholder="Ex: Ball de bastons, Contrapàs, Sardana..."
-        v-model="detallsDanses.ball" class="custom-input">
+      <select v-model="detallsDanses.ball" class="custom-select">
+        <option value="" disabled selected>Tria el ball</option>
+        <option v-for="ball in ballsDisponibles" :key="ball" :value="ball">{{ ball }}</option>
+      </select>
     </div>
 
     <div class="form-section">
@@ -96,7 +110,7 @@ export default {
 .section-title { font-size: 1.05rem; color: #374151; font-weight: 600; margin: 0; }
 .required { color: #ef4444; }
 
-.custom-input {
+.custom-select {
   width: 100%;
   padding: 12px 14px;
   border: 1px solid #d1d5db;
@@ -104,11 +118,11 @@ export default {
   font-size: 1rem;
   color: #1f2937;
   background-color: #f9fafb;
-  box-sizing: border-box;
   transition: all 0.2s ease;
   font-family: inherit;
+  cursor: pointer;
 }
-.custom-input:focus {
+.custom-select:focus {
   outline: none;
   border-color: #f59e0b;
   box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15);

@@ -8,21 +8,20 @@ export default {
   data() {
     return {
       comissionsDisponibles: [
-        { id: 'gestio', label: '🗂️ Gestió' },
-        { id: 'imatge', label: '📸 Imatge' },
+        { id: 'gestio',  label: '🗂️ Gestió' },
+        { id: 'imatge',  label: '📸 Imatge' },
         { id: 'taverna', label: '🍺 Taverna' },
-        { id: 'poble', label: '🏘️ Poble / Coromines' },
-        { id: 'altres', label: '✨ Altres' },
+        { id: 'poble',   label: '🏘️ Poble' },
+        { id: 'banda',   label: '🎺 Banda Àuria' },
+        { id: 'teatre',  label: '🎭 Teatre' },
+        { id: 'danses',  label: '💃 Danses' },
+        { id: 'altres',  label: '✨ Altres' },
       ],
     }
   },
 
   computed: {
     ...mapWritableState(useFormStore, ['detallsOrganitzacio']),
-
-    esDeTaverna() {
-      return this.detallsOrganitzacio.comissions.includes('taverna');
-    },
 
     potContinuar() {
       return this.detallsOrganitzacio.comissions.length > 0;
@@ -62,35 +61,6 @@ export default {
           <span>{{ comi.label }}</span>
         </label>
       </div>
-    </div>
-
-    <!-- Pregunta específica de Taverna -->
-    <div v-if="esDeTaverna" class="taverna-box">
-      <div class="taverna-header">
-        <span class="taverna-icon">🍺</span>
-        <div>
-          <h3>Taverna</h3>
-          <p>Els torns de barra s'organitzen en base a la gent disponible.</p>
-        </div>
-      </div>
-      <label class="section-title">Et compromets a fer un torn de barra per nit de festa?</label>
-      <div class="radio-group">
-        <label class="radio-label" :class="{ 'radio-selected': detallsOrganitzacio.tornBarra === true }">
-          <input type="radio" :value="true" v-model="detallsOrganitzacio.tornBarra">
-          <span>Sí, m'hi comprometo!</span>
-        </label>
-        <label class="radio-label" :class="{ 'radio-selected': detallsOrganitzacio.tornBarra === false }">
-          <input type="radio" :value="false" v-model="detallsOrganitzacio.tornBarra">
-          <span>No podré, però col·laboro en altres coses.</span>
-        </label>
-      </div>
-    </div>
-
-    <div class="form-section">
-      <label class="section-title">Vols afegir alguna cosa?</label>
-      <textarea v-model="detallsOrganitzacio.observacions"
-        placeholder="Altres comentaris, disponibilitat, o qualsevol cosa que vulguis fer saber a l'organització..."
-        rows="4" class="custom-textarea"></textarea>
     </div>
 
     <div class="actions">
@@ -163,43 +133,16 @@ export default {
   font-weight: 600 !important;
 }
 
-/* Caixa específica de Taverna */
-.taverna-box {
-  background-color: #fff7ed;
-  border: 1px solid #fed7aa;
-  border-left: 4px solid #f97316;
-  padding: 20px;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.taverna-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-}
-.taverna-icon { font-size: 2rem; line-height: 1; }
+
+
+
 .taverna-header h3 { margin: 0 0 4px; color: #c2410c; font-size: 1.1rem; font-weight: 700; }
 .taverna-header p { margin: 0; color: #9a3412; font-size: 0.9rem; }
 
-.radio-group { display: flex; flex-direction: column; gap: 10px; }
-.radio-label {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 16px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  background-color: #ffffff;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.95rem;
-  color: #374151;
-  font-weight: 500;
-}
+
+
 .radio-label:hover { background-color: #fafafa; }
-.radio-selected { background-color: #fffbeb; border-color: #f59e0b; color: #b45309; font-weight: 600; }
+
 
 input[type="checkbox"], input[type="radio"] {
   width: 18px; height: 18px;
