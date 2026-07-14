@@ -75,9 +75,9 @@ export default {
 
     <div class="info-box">
       <p>
-        <strong>Important:</strong> Has de seleccionar almenys una tasca per poder continuar. Les places disponibles
-        s'actualitzen en temps real i per tant si una tasca es queda sense places apareixerà bloquejada. Recorda que la
-        Cabra d’Or és de tots i totes!🐐💛
+        <strong>Important:</strong> Has de seleccionar almenys una tasca per poder continuar.
+        Les places disponibles s'actualitzen en temps real — si una tasca es queda sense places
+        apareixerà bloquejada.
       </p>
     </div>
 
@@ -115,15 +115,19 @@ export default {
             </div>
 
             <div class="row-tasca">
-              <button class="btn-task" :class="{ 'is-selected': isSeleccionada(task.id) }"
-                :disabled="task.places_lliures === 0 && !isSeleccionada(task.id)" @click="toggleTasca(task.id)">
+              <button
+                class="btn-task"
+                :class="{ 'is-selected': isSeleccionada(task.id) }"
+                :disabled="task.places_lliures === 0 && !isSeleccionada(task.id)"
+                @click="toggleTasca(task.id)">
                 <div class="task-info">
                   <span class="task-name">{{ task.nom }}</span>
-                  <span class="task-places" :class="{
-                    'places-ok': task.places_lliures > 2,
-                    'places-low': task.places_lliures <= 2 && task.places_lliures > 0,
-                    'places-full': task.places_lliures === 0
-                  }">
+                  <span class="task-places"
+                    :class="{
+                      'places-ok': task.places_lliures > 2,
+                      'places-low': task.places_lliures <= 2 && task.places_lliures > 0,
+                      'places-full': task.places_lliures === 0
+                    }">
                     <template v-if="task.places_lliures === 0">Complet</template>
                     <template v-else>{{ task.places_lliures }} places lliures</template>
                   </span>
@@ -147,11 +151,7 @@ export default {
 </template>
 
 <style scoped>
-.dades-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
+.dades-wrapper { display: flex; flex-direction: column; gap: 24px; }
 
 .header-row {
   display: flex;
@@ -161,19 +161,8 @@ export default {
   flex-wrap: wrap;
 }
 
-.header-text h1 {
-  margin: 0;
-  color: #111827;
-  font-size: 1.875rem;
-  font-weight: 800;
-}
-
-.header-text h3 {
-  margin: 8px 0 0 0;
-  color: #6b7280;
-  font-size: 1rem;
-  font-weight: 400;
-}
+.header-text h1 { margin: 0; color: #111827; font-size: 1.875rem; font-weight: 800; }
+.header-text h3 { margin: 8px 0 0 0; color: #6b7280; font-size: 1rem; font-weight: 400; }
 
 /* Badge de seleccions: ara coherent amb el daurat de la resta de l'app */
 .seleccio-badge {
@@ -190,7 +179,6 @@ export default {
   white-space: nowrap;
   flex-shrink: 0;
 }
-
 .seleccio-icon {
   display: flex;
   align-items: center;
@@ -211,16 +199,10 @@ export default {
   padding: 12px 16px;
   border-radius: 6px;
 }
-
-.info-box p {
-  margin: 0;
-  color: #b45309;
-  font-size: 0.9rem;
-}
+.info-box p { margin: 0; color: #b45309; font-size: 0.9rem; }
 
 /* Loading / Error */
-.loading-state,
-.error-state {
+.loading-state, .error-state {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -229,37 +211,20 @@ export default {
   border-radius: 8px;
   color: #6b7280;
 }
-
 .spinner {
-  width: 24px;
-  height: 24px;
+  width: 24px; height: 24px;
   border: 3px solid #fde68a;
   border-top-color: #f59e0b;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   flex-shrink: 0;
 }
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.error-state {
-  background-color: #fef2f2;
-  color: #b91c1c;
-}
-
-.error-state p {
-  margin: 0;
-}
+@keyframes spin { to { transform: rotate(360deg); } }
+.error-state { background-color: #fef2f2; color: #b91c1c; }
+.error-state p { margin: 0; }
 
 /* Dies */
-.day-section {
-  margin-bottom: 30px;
-}
-
+.day-section { margin-bottom: 30px; }
 .day-title {
   font-size: 1.2rem;
   font-weight: 700;
@@ -282,11 +247,7 @@ export default {
   font-weight: 700;
 }
 
-.tasks-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
+.tasks-list { display: flex; flex-direction: column; gap: 6px; }
 
 /* Fila d'una tasca: grid de 3 columnes en escriptori */
 .task-row {
@@ -298,28 +259,12 @@ export default {
   border-bottom: 1px solid #f3f4f6;
 }
 
-.mobile-label {
-  display: none;
-}
+.mobile-label { display: none; } /* Només es mostren en mòbil */
 
-/* Només es mostren en mòbil */
+.row-hora { display: flex; align-items: center; }
+.hora-valor { font-weight: 700; color: #4b5563; font-size: 0.95rem; }
 
-.row-hora {
-  display: flex;
-  align-items: center;
-}
-
-.hora-valor {
-  font-weight: 700;
-  color: #4b5563;
-  font-size: 0.95rem;
-}
-
-.row-public {
-  display: flex;
-  align-items: center;
-}
-
+.row-public { display: flex; align-items: center; }
 .public-event-badge {
   display: inline-block;
   background-color: #f3f4f6;
@@ -358,7 +303,6 @@ export default {
   background-color: #f59e0b;
   border-color: #d97706;
 }
-
 .btn-task.is-selected:hover {
   background-color: #d97706;
   border-color: #b45309;
@@ -372,11 +316,7 @@ export default {
   opacity: 0.65;
 }
 
-.task-info {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
+.task-info { display: flex; flex-direction: column; gap: 3px; }
 
 .task-name {
   font-weight: 600;
@@ -384,35 +324,14 @@ export default {
   color: #1f2937;
   line-height: 1.25;
 }
+.btn-task.is-selected .task-name { color: #ffffff; }
+.btn-task:disabled .task-name { color: #9ca3af; }
 
-.btn-task.is-selected .task-name {
-  color: #ffffff;
-}
-
-.btn-task:disabled .task-name {
-  color: #9ca3af;
-}
-
-.task-places {
-  font-size: 0.78rem;
-}
-
-.places-ok {
-  color: #6b7280;
-}
-
-.places-low {
-  color: #dc2626;
-  font-weight: 600;
-}
-
-.places-full {
-  color: #9ca3af;
-}
-
-.btn-task.is-selected .task-places {
-  color: rgba(255, 255, 255, 0.85);
-}
+.task-places { font-size: 0.78rem; }
+.places-ok { color: #6b7280; }
+.places-low { color: #dc2626; font-weight: 600; }
+.places-full { color: #9ca3af; }
+.btn-task.is-selected .task-places { color: rgba(255,255,255,0.85); }
 
 .check-icon {
   background-color: #ffffff;
@@ -426,7 +345,7 @@ export default {
   font-weight: bold;
   font-size: 0.9rem;
   flex-shrink: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   margin-left: 10px;
 }
 
@@ -438,7 +357,6 @@ export default {
   border-top: 1px solid #e5e7eb;
   padding-top: 24px;
 }
-
 .btn-primary {
   background-color: #d97706;
   color: #ffffff;
@@ -451,20 +369,12 @@ export default {
   transition: all 0.2s ease;
   box-shadow: 0 4px 6px rgba(217, 119, 6, 0.2);
 }
-
 .btn-primary:hover:not(:disabled) {
   background-color: #b45309;
   box-shadow: 0 6px 12px rgba(217, 119, 6, 0.3);
   transform: translateY(-1px);
 }
-
-.btn-primary:disabled {
-  background-color: #e5e7eb;
-  color: #9ca3af;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
+.btn-primary:disabled { background-color: #e5e7eb; color: #9ca3af; cursor: not-allowed; box-shadow: none; }
 .btn-secondary {
   background-color: #ffffff;
   color: #4b5563;
@@ -476,27 +386,17 @@ export default {
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
-.btn-secondary:hover {
-  background-color: #f9fafb;
-  border-color: #9ca3af;
-  color: #1f2937;
-}
+.btn-secondary:hover { background-color: #f9fafb; border-color: #9ca3af; color: #1f2937; }
 
 /* ============================================
    RESPONSIVE: targetes apilades en lloc de
    files de taula esprémudes
    ============================================ */
 @media (max-width: 640px) {
-  .seleccio-badge {
-    font-size: 0.78rem;
-    padding: 6px 12px 6px 6px;
-  }
+  .seleccio-badge { font-size: 0.78rem; padding: 6px 12px 6px 6px; }
 
   /* Amaguem la capçalera de columnes: cada fila porta les seves pròpies etiquetes */
-  .tasks-header {
-    display: none;
-  }
+  .tasks-header { display: none; }
 
   .task-row {
     grid-template-columns: 1fr;
@@ -519,19 +419,10 @@ export default {
     flex-shrink: 0;
   }
 
-  .row-hora,
-  .row-public {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+  .row-hora, .row-public { display: flex; align-items: center; gap: 8px; }
 
-  .row-tasca {
-    margin-top: 2px;
-  }
+  .row-tasca { margin-top: 2px; }
 
-  .btn-task {
-    min-height: 56px;
-  }
+  .btn-task { min-height: 56px; }
 }
 </style>

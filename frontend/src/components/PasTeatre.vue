@@ -26,16 +26,17 @@ export default {
 
     <div class="info-box">
       <p>
-        🎭La comissió de teatre es posarà en contacte amb tu per coordinar els assajos i la teva participació. Si tens
-        qualsevol pregunta o comentari, pots deixar-lo aquí sota!
+        Gràcies per participar al teatre de la Cabra d'Or! La comissió de teatre es posarà
+        en contacte amb tu per coordinar els assajos i la teva participació. Si tens qualsevol
+        pregunta o comentari, pots deixar-lo aquí sota.
       </p>
     </div>
 
     <div class="form-section">
       <label class="section-title">Cal alguna cosa concreta?</label>
       <textarea v-model="detallsTeatre.necessitatConcreta"
-        placeholder="Material, vestuari, recursos, o qualsevol altra necessitat específica..." rows="5"
-        class="custom-textarea"></textarea>
+        placeholder="Material, vestuari, recursos, o qualsevol altra necessitat específica..."
+        rows="5" class="custom-textarea"></textarea>
     </div>
 
     <div class="actions">
@@ -46,25 +47,10 @@ export default {
 </template>
 
 <style scoped>
-.teatre-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
+.teatre-wrapper { display: flex; flex-direction: column; gap: 28px; }
 
-.header-text h1 {
-  margin: 0;
-  color: #111827;
-  font-size: 1.875rem;
-  font-weight: 800;
-}
-
-.header-text h3 {
-  margin: 8px 0 0 0;
-  color: #6b7280;
-  font-size: 1rem;
-  font-weight: 400;
-}
+.header-text h1 { margin: 0; color: #111827; font-size: 1.875rem; font-weight: 800; }
+.header-text h3 { margin: 8px 0 0 0; color: #6b7280; font-size: 1rem; font-weight: 400; }
 
 .info-box {
   background-color: #fffbeb;
@@ -73,26 +59,10 @@ export default {
   padding: 16px;
   border-radius: 8px;
 }
+.info-box p { margin: 0; color: #b45309; font-size: 0.95rem; line-height: 1.6; }
 
-.info-box p {
-  margin: 0;
-  color: #b45309;
-  font-size: 0.95rem;
-  line-height: 1.6;
-}
-
-.form-section {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.section-title {
-  font-size: 1.05rem;
-  color: #374151;
-  font-weight: 600;
-  margin: 0;
-}
+.form-section { display: flex; flex-direction: column; gap: 10px; }
+.section-title { font-size: 1.05rem; color: #374151; font-weight: 600; margin: 0; }
 
 .custom-textarea {
   width: 100%;
@@ -107,7 +77,6 @@ export default {
   font-family: inherit;
   resize: vertical;
 }
-
 .custom-textarea:focus {
   outline: none;
   border-color: #f59e0b;
@@ -122,7 +91,6 @@ export default {
   border-top: 1px solid #e5e7eb;
   padding-top: 24px;
 }
-
 .btn-primary {
   background-color: #d97706;
   color: #ffffff;
@@ -135,12 +103,7 @@ export default {
   transition: all 0.2s ease;
   box-shadow: 0 4px 6px rgba(217, 119, 6, 0.2);
 }
-
-.btn-primary:hover {
-  background-color: #b45309;
-  transform: translateY(-1px);
-}
-
+.btn-primary:hover { background-color: #b45309; transform: translateY(-1px); }
 .btn-secondary {
   background-color: #ffffff;
   color: #4b5563;
@@ -152,23 +115,10 @@ export default {
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
-.btn-secondary:hover {
-  background-color: #f9fafb;
-  border-color: #9ca3af;
-  color: #1f2937;
-}
+.btn-secondary:hover { background-color: #f9fafb; border-color: #9ca3af; color: #1f2937; }
 
 @media (max-width: 540px) {
-  .actions {
-    flex-direction: column-reverse;
-    gap: 10px;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    width: 100%;
-    text-align: center;
-  }
+  .actions { flex-direction: column-reverse; gap: 10px; }
+  .btn-primary, .btn-secondary { width: 100%; text-align: center; }
 }
 </style>

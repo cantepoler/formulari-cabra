@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { validarInscripcio } from './_validation.js';
+import { sincronitzaSheets } from './_sheets.js';
+import { enviaMailsInscripcio } from './_mail.js';
 
 const supabase = createClient(
     process.env.SUPABASE_URL,
@@ -50,33 +52,61 @@ export default async function handler(req, res) {
         }
 
         // PAS B: Guardar l'usuari a la taula inscripcions
-        const { error: errorInscripcio } = await supabase
-            .from('inscripcions')
-            .insert({
-                nom: inscripcio.dadesPersonals.nom,
-                cognom: inscripcio.dadesPersonals.cognom,
-                correu: inscripcio.dadesPersonals.correu,
-                telefon: inscripcio.dadesPersonals.telefon,
-                data_naixement: inscripcio.dadesPersonals.dataNaixement || null,
-                responsable_legal: inscripcio.dadesPersonals.responsable || null,
-                rols: inscripcio.rols || [],
-                tasques_logistiques: tasques_demanades,
-                // Totes les dades específiques de cada rol es guarden aquí.
-                // Abans només es guardaven 'banda' i 'sopar' — la resta de
-                // pestanyes (organització, danses, teatre, col·laboradors)
-                // s'enviaven però mai arribaven a desar-se.
+        const novaFila = {
+            nom: inscripcio.dadesPersonals.nom,
+            cognom: inscripcio.dadesPersonals.cognom,
+            correu: inscripcio.dadesPersonals.correu,
+            telefon: inscripcio.dadesPersonals.telefon,
+            data_naixement: inscripcio.dadesPersonals.dataNaixement || null,
+            responsable_legal: inscripcio.dadesPersonals.responsable || null,
+            rols: inscripcio.rols || [],
+            tasques_logistiques: tasques_demanades,
+            // Totes les dades específiques de cada rol es guarden aquí.
+            // Abans només es guardaven 'banda' i 'sopar' — la resta de
+            // pestanyes (organització, danses, teatre, col·laboradors)
+            // s'enviaven però mai arribaven a desar-se.
             consentiments: inscripcio.consentiments || {},
-                detalls_rols: {
-                    organitzacio: inscripcio.detallsOrganitzacio || null,
-                    banda: inscripcio.detallsBanda || null,
-                    teatre: inscripcio.detallsTeatre || null,
-                    danses: inscripcio.detallsDanses || null,
-                    colaboradors: inscripcio.detallsColaboradors || null,
-                    sopar: inscripcio.sopar
-                }
-	    });
+            detalls_rols: {
+                organitzacio: inscripcio.detallsOrganitzacio || null,
+                banda: inscripcio.detallsBanda || null,
+                teatre: inscripcio.detallsTeatre || null,
+                danses: inscripcio.detallsDanses || null,
+                colaboradors: inscripcio.detallsColaboradors || null,
+                sopar: inscripcio.sopar
+            }
+        };
+
+        const { data: filaInserida, error: errorInscripcio } = await supabase
+            .from('inscripcions')
+            .insert(novaFila)
+            .select()
+            .single();
 
         if (errorInscripcio) throw errorInscripcio;
+
+        // PAS C: Sincronitzar amb Sheets i enviar els correus.
+        // Supabase ja té la dada desada (font de veritat), així que si
+        // qualsevol d'aquests dos passos falla, no fem fallar la petició de
+        // l'usuari: només ho loguejem perquè es pugui revisar/reenviar a mà.
+        //
+        // Els envoltem amb un timeout propi (8s) perquè si Gmail o Sheets
+        // triguen massa, no es quedin penjats fins a esgotar el temps màxim
+        // de la funció (cosa que faria que ni tan sols responguéssim a
+        // l'usuari ni sortís cap log).
+        const ambTimeout = (promesa, nom, ms = 8000) =>
+            Promise.race([
+                promesa,
+                new Promise((resolve) => setTimeout(() => resolve([{ pestanya: nom, error: `Timeout (${ms}ms)` }]), ms)),
+            ]);
+
+        console.log('Iniciant sincronització amb Sheets i enviament de correus...');
+        const [errorsSheets, errorsMail] = await Promise.all([
+            ambTimeout(sincronitzaSheets(filaInserida), 'sheets'),
+            ambTimeout(enviaMailsInscripcio(inscripcio), 'mail'),
+        ]);
+        console.log('Sincronització i correus acabats.');
+        if (errorsSheets.length) console.error('Errors sincronitzant Sheets:', JSON.stringify(errorsSheets));
+        if (errorsMail.length) console.error('Errors enviant correus:', JSON.stringify(errorsMail));
 
         res.status(200).json({ success: true });
 

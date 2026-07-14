@@ -48,8 +48,8 @@ export default {
 
     <div class="info-box">
       <p>
-        🩰Desde la comissió de danses necessitem saber quin ball fas i la teva talla per poder preparar el vestuari si
-        cal! Ens posarem en contacte amb tu per fer-te arribar el vestit si cal.
+        Gràcies per ballar a la Cabra d'Or! Necessitem saber quin ball fas i la teva talla
+        per poder preparar el vestuari si cal.
       </p>
     </div>
 
@@ -64,7 +64,8 @@ export default {
     <div class="form-section">
       <label class="section-title">Talla de roba</label>
       <div class="talla-grid">
-        <label v-for="talla in talles" :key="talla" class="talla-card"
+        <label v-for="talla in talles" :key="talla"
+          class="talla-card"
           :class="{ 'talla-selected': detallsDanses.talla === talla }">
           <input type="radio" :value="talla" v-model="detallsDanses.talla">
           <span>{{ talla }}</span>
@@ -75,8 +76,8 @@ export default {
     <div class="form-section">
       <label class="section-title">Vols afegir alguna cosa?</label>
       <textarea v-model="detallsDanses.observacions"
-        placeholder="Disponibilitat, dubtes, o qualsevol cosa que vulguis fer saber..." rows="4"
-        class="custom-textarea"></textarea>
+        placeholder="Disponibilitat, dubtes, o qualsevol cosa que vulguis fer saber..."
+        rows="4" class="custom-textarea"></textarea>
     </div>
 
     <div class="actions">
@@ -93,19 +94,8 @@ export default {
   gap: 28px;
 }
 
-.header-text h1 {
-  margin: 0;
-  color: #111827;
-  font-size: 1.875rem;
-  font-weight: 800;
-}
-
-.header-text h3 {
-  margin: 8px 0 0 0;
-  color: #6b7280;
-  font-size: 1rem;
-  font-weight: 400;
-}
+.header-text h1 { margin: 0; color: #111827; font-size: 1.875rem; font-weight: 800; }
+.header-text h3 { margin: 8px 0 0 0; color: #6b7280; font-size: 1rem; font-weight: 400; }
 
 .info-box {
   background-color: #fffbeb;
@@ -114,30 +104,11 @@ export default {
   padding: 16px;
   border-radius: 8px;
 }
+.info-box p { margin: 0; color: #b45309; font-size: 0.95rem; line-height: 1.5; }
 
-.info-box p {
-  margin: 0;
-  color: #b45309;
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
-
-.form-section {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.section-title {
-  font-size: 1.05rem;
-  color: #374151;
-  font-weight: 600;
-  margin: 0;
-}
-
-.required {
-  color: #ef4444;
-}
+.form-section { display: flex; flex-direction: column; gap: 10px; }
+.section-title { font-size: 1.05rem; color: #374151; font-weight: 600; margin: 0; }
+.required { color: #ef4444; }
 
 .custom-select {
   width: 100%;
@@ -151,7 +122,6 @@ export default {
   font-family: inherit;
   cursor: pointer;
 }
-
 .custom-select:focus {
   outline: none;
   border-color: #f59e0b;
@@ -165,7 +135,6 @@ export default {
   flex-wrap: wrap;
   gap: 10px;
 }
-
 .talla-card {
   display: flex;
   align-items: center;
@@ -182,21 +151,11 @@ export default {
   color: #374151;
   min-width: 64px;
 }
-
-.talla-card:hover {
-  background-color: #fffbeb;
-  border-color: #fde68a;
-}
-
-.talla-selected {
-  background-color: #fffbeb !important;
-  border-color: #f59e0b !important;
-  color: #b45309 !important;
-}
+.talla-card:hover { background-color: #fffbeb; border-color: #fde68a; }
+.talla-selected { background-color: #fffbeb !important; border-color: #f59e0b !important; color: #b45309 !important; }
 
 input[type="radio"] {
-  display: none;
-  /* Amaguem el radio, el card fa de toggle */
+  display: none; /* Amaguem el radio, el card fa de toggle */
 }
 
 .custom-textarea {
@@ -212,7 +171,6 @@ input[type="radio"] {
   font-family: inherit;
   resize: vertical;
 }
-
 .custom-textarea:focus {
   outline: none;
   border-color: #f59e0b;
@@ -227,7 +185,6 @@ input[type="radio"] {
   border-top: 1px solid #e5e7eb;
   padding-top: 24px;
 }
-
 .btn-primary {
   background-color: #d97706;
   color: #ffffff;
@@ -240,19 +197,8 @@ input[type="radio"] {
   transition: all 0.2s ease;
   box-shadow: 0 4px 6px rgba(217, 119, 6, 0.2);
 }
-
-.btn-primary:hover:not(:disabled) {
-  background-color: #b45309;
-  transform: translateY(-1px);
-}
-
-.btn-primary:disabled {
-  background-color: #e5e7eb;
-  color: #9ca3af;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
+.btn-primary:hover:not(:disabled) { background-color: #b45309; transform: translateY(-1px); }
+.btn-primary:disabled { background-color: #e5e7eb; color: #9ca3af; cursor: not-allowed; box-shadow: none; }
 .btn-secondary {
   background-color: #ffffff;
   color: #4b5563;
@@ -264,23 +210,10 @@ input[type="radio"] {
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
-.btn-secondary:hover {
-  background-color: #f9fafb;
-  border-color: #9ca3af;
-  color: #1f2937;
-}
+.btn-secondary:hover { background-color: #f9fafb; border-color: #9ca3af; color: #1f2937; }
 
 @media (max-width: 540px) {
-  .actions {
-    flex-direction: column-reverse;
-    gap: 10px;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    width: 100%;
-    text-align: center;
-  }
+  .actions { flex-direction: column-reverse; gap: 10px; }
+  .btn-primary, .btn-secondary { width: 100%; text-align: center; }
 }
 </style>

@@ -47,21 +47,25 @@ export const useFormStore = defineStore('formulari', {
     },
   }),
 
+  // Any de referència de la festa: l'edat es compta "per cursos" (per any de
+  // naixement), no per data exacta de naixement, tal com es fa habitualment
+  // en aquest tipus d'activitats.
+  ANY_FESTA: 2026,
+
   getters: {
+    // Edat "per cursos": anys que es compleixen (o s'han complert) durant
+    // l'any de la festa, independentment del dia i mes exactes de naixement.
     edat(state) {
       if (!state.personals.dataNaixement) return null;
-      const avui = new Date();
       const naixement = new Date(state.personals.dataNaixement);
-      let edat = avui.getFullYear() - naixement.getFullYear();
-      const mesos = avui.getMonth() - naixement.getMonth();
-      if (mesos < 0 || (mesos === 0 && avui.getDate() < naixement.getDate())) edat--;
-      return edat;
+      if (isNaN(naixement.getTime())) return null;
+      return 2026 - naixement.getFullYear();
     },
 
     esMenor16() { return this.edat !== null && this.edat < 16; },
     esMenor14() { return this.edat !== null && this.edat < 14; },
 
-    // >= 15: banda completa | 13-14: contrabanda però poden fer cercavila
+    // >= 15: banda completa | 13-14 (a partir del 2014): contrabanda però poden fer cercavila
     potTocarBanda() {
       if (this.edat === null) return null;
       return this.edat >= 15;

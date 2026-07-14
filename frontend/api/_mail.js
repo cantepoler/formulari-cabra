@@ -85,5 +85,18 @@ export async function enviaMailsInscripcio(inscripcio) {
         errors.push({ desti: 'participant', error: error.message });
     }
 
+    try {
+        if (process.env.ASSOCIATION_EMAIL) {
+            await transporter.sendMail({
+                from: `"Formulari Cabra d'Or" <${process.env.GMAIL_USER}>`,
+                to: process.env.ASSOCIATION_EMAIL,
+                subject: `Nova inscripció: ${inscripcio.dadesPersonals?.nom} ${inscripcio.dadesPersonals?.cognom}`,
+                html: resum,
+            });
+        }
+    } catch (error) {
+        errors.push({ desti: 'associacio', error: error.message });
+    }
+
     return errors;
 }

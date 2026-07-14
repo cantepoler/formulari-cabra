@@ -26,10 +26,8 @@ export default {
         </div>
 
         <div class="info-box">
-            <p>Com cada any, al acabar el teatre, farem un sopar popular per a tota la gent que ha col·laborat i
-                participat activament. Ens encantaria que et quedessis a gaudir del sopar de nuvis! Recorda que hi ha
-                opció vegana/vegetariana i celíaca. Si tens alguna altra intolerància, pots especificar-la més avall.
-            </p>
+            <p><strong>El colofó de la festa!</strong> Com cada any, quan acabem de recollir farem un sopar popular per
+                a tota la gent que ha col·laborat i participat activament. Ens encantaria que t'hi quedessis.</p>
         </div>
 
         <div class="form-section">

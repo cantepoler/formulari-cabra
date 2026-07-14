@@ -5,14 +5,14 @@ const ALERGIES_VALIDES = ['celiac', 'vegetaria', 'altres'];
 
 function esCorreuValid(c) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c); }
 
+// Any de referència de la festa: mateix criteri "per cursos" que al client
+// (stores/formulari.js) — es compta per any de naixement, no per data exacta.
+const ANY_FESTA = 2026;
+
 function calculaEdat(dataNaixement) {
   const n = new Date(dataNaixement);
   if (isNaN(n.getTime())) return null;
-  const a = new Date();
-  let e = a.getFullYear() - n.getFullYear();
-  const m = a.getMonth() - n.getMonth();
-  if (m < 0 || (m === 0 && a.getDate() < n.getDate())) e--;
-  return e;
+  return ANY_FESTA - n.getFullYear();
 }
 
 export function validarInscripcio(body) {
