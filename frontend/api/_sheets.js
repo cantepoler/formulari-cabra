@@ -7,6 +7,25 @@ import { google } from 'googleapis';
 // d'inserir la fila a Supabase (en lloc d'un Database Webhook, que no és
 // disponible al pla gratuït de Supabase).
 
+// Alguns valors (rols, moments, comissions, tasques, al·lèrgies...) haurien
+// de ser sempre un array, però depenent de com estigui definida la columna
+// a Supabase (jsonb vs text[]) o de dades antigues, poden arribar com a
+// string (JSON serialitzat, o buit) en lloc d'array. Ho normalitzem sempre
+// abans de fer .join() perquè un sol camp mal format no faci caure tot
+// el sync.
+function normalitzaArray(valor) {
+    if (Array.isArray(valor)) return valor;
+    if (typeof valor === 'string' && valor.trim()) {
+        try {
+            const parsed = JSON.parse(valor);
+            if (Array.isArray(parsed)) return parsed;
+        } catch {
+            return [valor];
+        }
+    }
+    return [];
+}
+
 function getAuth() {
     const privateKey = (process.env.GOOGLE_PRIVATE_KEY || '').replace(/\\n/g, '\n');
     return new google.auth.JWT(
@@ -25,7 +44,7 @@ function construeixFiles(row) {
         telefon: row.telefon, dataNaixement: row.data_naixement,
         responsable: row.responsable_legal,
     };
-    const rols = row.rols || [];
+    const rols = normalitzaArray(row.rols);
     const detalls = row.detalls_rols || {};
     const files = [];
 
@@ -34,7 +53,7 @@ function construeixFiles(row) {
         fila: [
             p.nom, p.cognom, p.correu, p.telefon, p.dataNaixement || '',
             p.responsable || '', rols.join(', '),
-            (row.tasques_logistiques || []).join(', '),
+            normalitzaArray(row.tasques_logistiques).join(', '),
             row.created_at || new Date().toISOString(),
         ],
     });
@@ -45,7 +64,7 @@ function construeixFiles(row) {
             pestanya: 'Banda Àuria',
             fila: [
                 p.nom, p.cognom, p.correu, b.instrument || '',
-                (b.moments || []).join(', '), b.necessitaPartitures || '',
+                normalitzaArray(b.moments).join(', '), b.necessitaPartitures || '',
                 b.observacions || '',
             ],
         });
@@ -63,7 +82,7 @@ function construeixFiles(row) {
         const o = detalls.organitzacio;
         files.push({
             pestanya: 'Organització',
-            fila: [p.nom, p.cognom, p.correu, (o.comissions || []).join(', ')],
+            fila: [p.nom, p.cognom, p.correu, normalitzaArray(o.comissions).join(', ')],
         });
     }
 
@@ -90,7 +109,7 @@ function construeixFiles(row) {
             fila: [
                 p.nom, p.cognom, p.correu,
                 s.sopar ? 'Sí' : 'No',
-                (s.alergies || []).join(', '),
+                normalitzaArray(s.alergies).join(', '),
                 s.altresAlergies || '',
             ],
         });

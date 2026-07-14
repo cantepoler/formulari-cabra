@@ -85,6 +85,17 @@ export default async function handler(req, res) {
         if (errorInscripcio) throw errorInscripcio;
 
         // PAS C: Sincronitzar amb Sheets i enviar els correus.
+        // Per al correu volem els noms/hores llegibles de les tasques, no
+        // només els IDs que guardem a la BD.
+        let tasquesLlegibles = [];
+        if (tasques_demanades.length > 0) {
+            const { data: tasquesInfo } = await supabase
+                .from('tasques')
+                .select('id, nom, hora, dia')
+                .in('id', tasques_demanades);
+            tasquesLlegibles = tasquesInfo || [];
+        }
+
         // Supabase ja té la dada desada (font de veritat), així que si
         // qualsevol d'aquests dos passos falla, no fem fallar la petició de
         // l'usuari: només ho loguejem perquè es pugui revisar/reenviar a mà.
@@ -102,7 +113,7 @@ export default async function handler(req, res) {
         console.log('Iniciant sincronització amb Sheets i enviament de correus...');
         const [errorsSheets, errorsMail] = await Promise.all([
             ambTimeout(sincronitzaSheets(filaInserida), 'sheets'),
-            ambTimeout(enviaMailsInscripcio(inscripcio), 'mail'),
+            ambTimeout(enviaMailsInscripcio(inscripcio, tasquesLlegibles), 'mail'),
         ]);
         console.log('Sincronització i correus acabats.');
         if (errorsSheets.length) console.error('Errors sincronitzant Sheets:', JSON.stringify(errorsSheets));

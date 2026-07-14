@@ -18,7 +18,7 @@ function getTransporter() {
     });
 }
 
-function resumHtml(inscripcio) {
+function resumHtml(inscripcio, tasquesLlegibles = []) {
     const p = inscripcio.dadesPersonals;
     const linies = [
         `<p><strong>Nom:</strong> ${p.nom} ${p.cognom}</p>`,
@@ -28,8 +28,11 @@ function resumHtml(inscripcio) {
         `<p><strong>Rols:</strong> ${(inscripcio.rols || []).join(', ') || '—'}</p>`,
     ];
 
-    if (inscripcio.tasquesTriades?.length) {
-        linies.push(`<p><strong>Tasques triades:</strong> ${inscripcio.tasquesTriades.join(', ')}</p>`);
+    if (tasquesLlegibles.length) {
+        const text = tasquesLlegibles
+            .map(t => `${t.dia ? t.dia + ' ' : ''}${t.hora ? t.hora + ' — ' : ''}${t.nom}`)
+            .join('; ');
+        linies.push(`<p><strong>Tasques triades:</strong> ${text}</p>`);
     }
     if (inscripcio.detallsBanda?.instrument) {
         const b = inscripcio.detallsBanda;
@@ -59,10 +62,10 @@ function resumHtml(inscripcio) {
 // No llancem mai excepcions cap amunt pel mateix motiu que a _sheets.js:
 // la inscripció ja és a Supabase, un correu que falla no ha de fer fallar
 // la petició de l'usuari.
-export async function enviaMailsInscripcio(inscripcio) {
+export async function enviaMailsInscripcio(inscripcio, tasquesLlegibles = []) {
     const errors = [];
     const transporter = getTransporter();
-    const resum = resumHtml(inscripcio);
+    const resum = resumHtml(inscripcio, tasquesLlegibles);
     const correuParticipant = inscripcio.dadesPersonals?.correu;
 
     try {
