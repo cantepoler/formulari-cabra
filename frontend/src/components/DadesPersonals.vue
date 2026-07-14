@@ -134,12 +134,6 @@ export default {
         <label class="checkbox-label" :class="{ 'checkbox-selected': rols.includes('colabos') }">
           <input type="checkbox" value="colabos" v-model="rols"><span>🤝 Col·laboradors</span>
         </label>
-        <label class="checkbox-label" :class="{ 'checkbox-selected': rols.includes('taverna') }">
-          <input type="checkbox" value="taverna" v-model="rols"><span>🍺 Taverna</span>
-        </label>
-        <label class="checkbox-label" :class="{ 'checkbox-selected': rols.includes('poble') }">
-          <input type="checkbox" value="poble" v-model="rols"><span>🏘️ Poble</span>
-        </label>
       </div>
       <span v-if="err('rols')" class="error-msg">{{ errors.rols }}</span>
     </div>

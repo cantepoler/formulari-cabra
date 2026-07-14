@@ -1,6 +1,6 @@
 // api/_validation.js  — prefix "_" = Vercel no el tracta com endpoint
 
-const ROLS_VALIDS = ['organitzacio', 'banda', 'teatre', 'danses', 'colabos', 'taverna', 'poble'];
+const ROLS_VALIDS = ['organitzacio', 'banda', 'teatre', 'danses', 'colabos'];
 const ALERGIES_VALIDES = ['celiac', 'vegetaria', 'altres'];
 
 function esCorreuValid(c) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c); }
