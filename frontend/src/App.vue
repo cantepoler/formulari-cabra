@@ -78,6 +78,13 @@ export default {
 
             this.pasIndex = this.llistaPassos.indexOf('pas-logistica');
           }
+          else if (response.status === 422) {
+            // SIMULTANEÏTAT DE TASQUES (defensa de servidor, normalment ja
+            // bloquejada abans al pas de logística)
+            const { detall } = await response.json();
+            alert(`Ups! ${detall || 'Dues de les tasques triades coincideixen en horari.'}`);
+            this.pasIndex = this.llistaPassos.indexOf('pas-logistica');
+          }
           else {
             throw new Error(`Error desconegut: ${response.status}`);
           }

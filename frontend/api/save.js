@@ -3,6 +3,40 @@ import { validarInscripcio } from './_validation.js';
 import { sincronitzaSheets } from './_sheets.js';
 import { enviaMailsInscripcio } from './_mail.js';
 
+// Converteix "HH:MM" a minuts des de mitjanit. Si la tasca creua la
+// mitjanit (p. ex. 23:00–01:00), la hora de fi es tracta com si fos
+// l'endemà (+24h) perquè el rang es pugui comparar correctament.
+function rangMinuts(t) {
+    const aMinuts = (hhmm) => {
+        if (!hhmm) return null;
+        const [h, m] = String(hhmm).split(':').map(Number);
+        return Number.isFinite(h) && Number.isFinite(m) ? h * 60 + m : null;
+    };
+    const inici = aMinuts(t.hora_inici);
+    let fi = aMinuts(t.hora_fi);
+    if (inici === null || fi === null) return null;
+    if (fi <= inici) fi += 24 * 60;
+    return [inici, fi];
+}
+
+// Retorna el primer parell de tasques que coincideixen en dia i que el seu
+// interval horari es xafa, o null si no n'hi ha cap.
+function trobaSolapament(tasques) {
+    for (let i = 0; i < tasques.length; i++) {
+        for (let j = i + 1; j < tasques.length; j++) {
+            const a = tasques[i], b = tasques[j];
+            if (a.dia !== b.dia) continue;
+            const ra = rangMinuts(a), rb = rangMinuts(b);
+            // Si a alguna de les dues li falta hora_inici/hora_fi no podem
+            // comprovar-ho: no bloquegem (millor no bloquejar de més que
+            // trencar una inscripció legítima per manca de dades).
+            if (!ra || !rb) continue;
+            if (ra[0] < rb[1] && rb[0] < ra[1]) return [a, b];
+        }
+    }
+    return null;
+}
+
 const supabase = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -28,6 +62,32 @@ export default async function handler(req, res) {
     const tasques_demanades = inscripcio.tasquesTriades || [];
 
     try {
+        let tasquesInfo = [];
+
+        if (tasques_demanades.length > 0) {
+            // Necessitem dia + franja horària de cada tasca triada per poder
+            // comprovar solapaments abans de reservar cap plaça.
+            const { data, error: errorTasques } = await supabase
+                .from('tasques')
+                .select('id, nom, dia, hora, hora_inici, hora_fi')
+                .in('id', tasques_demanades);
+
+            if (errorTasques) throw errorTasques;
+            tasquesInfo = data || [];
+
+            if (tasquesInfo.length !== tasques_demanades.length) {
+                return res.status(400).json({ error: 'Alguna de les tasques triades ja no existeix' });
+            }
+
+            const solapament = trobaSolapament(tasquesInfo);
+            if (solapament) {
+                return res.status(422).json({
+                    error: 'Simultaneïtat de tasques',
+                    detall: `"${solapament[0].nom}" i "${solapament[1].nom}" són el mateix dia i coincideixen en horari. Només pots triar-ne una de les dues.`,
+                });
+            }
+        }
+
         // PAS A: Restar places de les tasques (Només si n'ha triat alguna)
         if (tasques_demanades.length > 0) {
             const { data: placesSuficients, error: errorRpc } = await supabase.rpc('reservar_tasques', {
@@ -85,17 +145,8 @@ export default async function handler(req, res) {
         if (errorInscripcio) throw errorInscripcio;
 
         // PAS C: Sincronitzar amb Sheets i enviar els correus.
-        // Per al correu volem els noms/hores llegibles de les tasques, no
-        // només els IDs que guardem a la BD.
-        let tasquesLlegibles = [];
-        if (tasques_demanades.length > 0) {
-            const { data: tasquesInfo } = await supabase
-                .from('tasques')
-                .select('id, nom, hora, dia')
-                .in('id', tasques_demanades);
-            tasquesLlegibles = tasquesInfo || [];
-        }
-
+        // Reutilitzem tasquesInfo (ja consultat més amunt per comprovar
+        // solapaments) per als noms/hores llegibles del correu.
         // Supabase ja té la dada desada (font de veritat), així que si
         // qualsevol d'aquests dos passos falla, no fem fallar la petició de
         // l'usuari: només ho loguejem perquè es pugui revisar/reenviar a mà.
@@ -112,8 +163,8 @@ export default async function handler(req, res) {
 
         console.log('Iniciant sincronització amb Sheets i enviament de correus...');
         const [errorsSheets, errorsMail] = await Promise.all([
-            ambTimeout(sincronitzaSheets(filaInserida), 'sheets'),
-            ambTimeout(enviaMailsInscripcio(inscripcio, tasquesLlegibles), 'mail'),
+            ambTimeout(sincronitzaSheets(filaInserida, tasquesInfo), 'sheets'),
+            ambTimeout(enviaMailsInscripcio(inscripcio, tasquesInfo), 'mail'),
         ]);
         console.log('Sincronització i correus acabats.');
         if (errorsSheets.length) console.error('Errors sincronitzant Sheets:', JSON.stringify(errorsSheets));

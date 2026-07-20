@@ -38,7 +38,7 @@ function getAuth() {
 
 // Munta, per a cada rol de la inscripció, la fila (array de valors) a
 // afegir a la pestanya corresponent. Retorna una llista de { pestanya, fila }.
-function construeixFiles(row) {
+function construeixFiles(row, tasquesInfo = []) {
     const p = {
         nom: row.nom, cognom: row.cognom, correu: row.correu,
         telefon: row.telefon, dataNaixement: row.data_naixement,
@@ -48,12 +48,19 @@ function construeixFiles(row) {
     const detalls = row.detalls_rols || {};
     const files = [];
 
+    const tasquesText = tasquesInfo
+        .map(t => {
+            const franja = (t.hora_inici && t.hora_fi) ? `${t.hora_inici}–${t.hora_fi}` : t.hora;
+            return `${t.dia ? t.dia + ' ' : ''}${franja ? franja + ' — ' : ''}${t.nom}`;
+        })
+        .join('; ');
+
     files.push({
         pestanya: 'Participants',
         fila: [
             p.nom, p.cognom, p.correu, p.telefon, p.dataNaixement || '',
             p.responsable || '', rols.join(', '),
-            normalitzaArray(row.tasques_logistiques).join(', '),
+            tasquesText,
             row.created_at || new Date().toISOString(),
         ],
     });
@@ -121,19 +128,26 @@ function construeixFiles(row) {
 // No llancem mai excepcions cap amunt: si Sheets falla, la inscripció ja
 // és a Supabase (font de veritat) i no volem que l'usuari vegi un error.
 // Retornem els errors perquè save.js els pugui loguejar.
-export async function sincronitzaSheets(row) {
+export async function sincronitzaSheets(row, tasquesInfo = []) {
     try {
         const auth = getAuth();
         const sheets = google.sheets({ version: 'v4', auth });
         const spreadsheetId = process.env.GOOGLE_SHEET_ID;
-        const files = construeixFiles(row);
+        const files = construeixFiles(row, tasquesInfo);
 
+        // RAW en lloc de USER_ENTERED: aquí hi entra text lliure escrit per
+        // qualsevol persona del formulari (nom, observacions...). Amb
+        // USER_ENTERED, Google Sheets interpreta com a fórmula qualsevol
+        // valor que comenci per =, +, -, @ (p.ex. algú escrivint
+        // "=IMPORTXML(...)" al camp "nom"), executant-la quan algú obri el
+        // full — és l'atac conegut com "Formula/CSV Injection". Amb RAW,
+        // tot es desa sempre com a text literal.
         const resultats = await Promise.allSettled(
             files.map(({ pestanya, fila }) =>
                 sheets.spreadsheets.values.append({
                     spreadsheetId,
                     range: `${pestanya}!A1`,
-                    valueInputOption: 'USER_ENTERED',
+                    valueInputOption: 'RAW',
                     insertDataOption: 'INSERT_ROWS',
                     requestBody: { values: [fila] },
                 })

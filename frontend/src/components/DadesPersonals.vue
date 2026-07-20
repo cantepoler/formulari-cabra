@@ -91,8 +91,11 @@ export default {
         <span v-if="err('dataNaixement')" class="error-msg">{{ errors.dataNaixement }}</span>
       </div>
       <div class="form-group">
-        <label class="field-label">Correu electrònic <span class="required">*</span></label>
+        <label class="field-label">
+          {{ esMenor16 ? 'Correu del responsable' : 'Correu electrònic' }} <span class="required">*</span>
+        </label>
         <input type="email" placeholder="correu@exemple.cat" v-model="personals.correu" :class="{ 'input-error': err('correu') }">
+        <span v-if="esMenor16" class="field-hint">Com que ets menor de 16 anys, posa el correu del teu responsable: hi enviarem la confirmació.</span>
         <span v-if="err('correu')" class="error-msg">{{ errors.correu }}</span>
       </div>
       <div class="form-group">

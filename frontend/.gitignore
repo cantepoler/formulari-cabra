@@ -14,6 +14,12 @@ dist-ssr
 coverage
 *.local
 
+# Variables d'entorn / secrets (claus de Supabase, Google, Gmail...)
+.env
+.env.*
+!.env.example
+
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -15,12 +15,27 @@ export default {
 
   computed: {
     ...mapWritableState(useFormStore, ['tasquesSeleccionades']),
+
+    // Totes les tasques en una sola llista plana (per poder buscar-les per
+    // id sense preocupar-nos de quin dia són).
+    totesLesTasques() {
+      return Object.values(this.aforaments.tasques_logistiques || {}).flat();
+    },
+
+    tasquesSeleccionadesObjectes() {
+      return this.totesLesTasques.filter(t => this.tasquesSeleccionades.includes(t.id));
+    },
   },
 
   methods: {
     toggleTasca(taskId) {
       const index = this.tasquesSeleccionades.indexOf(taskId);
       if (index === -1) {
+        // Defensa extra: encara que el botó ja estigui deshabilitat quan hi
+        // ha solapament, no deixem seleccionar-la igualment si arribés a
+        // disparar-se l'event per algun altre camí.
+        const tasca = this.totesLesTasques.find(t => t.id === taskId);
+        if (tasca && this.esSolapaAmbSeleccionada(tasca)) return;
         this.tasquesSeleccionades.push(taskId);
       } else {
         this.tasquesSeleccionades.splice(index, 1);
@@ -29,6 +44,42 @@ export default {
 
     isSeleccionada(taskId) {
       return this.tasquesSeleccionades.includes(taskId);
+    },
+
+    // Rang [inici, fi] en minuts des de mitjanit. Si la tasca creua la
+    // mitjanit (p. ex. 23:00–01:00), la hora de fi es tracta com si fos
+    // l'endemà (+24h) perquè el rang es pugui comparar bé.
+    // MANTENIR EN SINCRONIA amb la mateixa lògica a api/save.js.
+    rangMinuts(tasca) {
+      const aMinuts = (hhmm) => {
+        if (!hhmm) return null;
+        const [h, m] = String(hhmm).split(':').map(Number);
+        return Number.isFinite(h) && Number.isFinite(m) ? h * 60 + m : null;
+      };
+      const inici = aMinuts(tasca.hora_inici);
+      let fi = aMinuts(tasca.hora_fi);
+      if (inici === null || fi === null) return null;
+      if (fi <= inici) fi += 24 * 60;
+      return [inici, fi];
+    },
+
+    tasquesQueSolapen(tasca) {
+      const ra = this.rangMinuts(tasca);
+      if (!ra) return [];
+      return this.tasquesSeleccionadesObjectes.filter(sel => {
+        if (sel.id === tasca.id || sel.dia !== tasca.dia) return false;
+        const rb = this.rangMinuts(sel);
+        if (!rb) return false;
+        return ra[0] < rb[1] && rb[0] < ra[1];
+      });
+    },
+
+    esSolapaAmbSeleccionada(tasca) {
+      return this.tasquesQueSolapen(tasca).length > 0;
+    },
+
+    franjaHoraria(tasca) {
+      return (tasca.hora_inici && tasca.hora_fi) ? `${tasca.hora_inici}–${tasca.hora_fi}` : (tasca.hora || '—');
     },
 
     enviar() {
@@ -106,7 +157,7 @@ export default {
 
             <div class="row-hora">
               <span class="mobile-label">Hora</span>
-              <span class="hora-valor">{{ task.hora }}</span>
+              <span class="hora-valor">{{ franjaHoraria(task) }}</span>
             </div>
 
             <div class="row-public">
@@ -117,8 +168,8 @@ export default {
             <div class="row-tasca">
               <button
                 class="btn-task"
-                :class="{ 'is-selected': isSeleccionada(task.id) }"
-                :disabled="task.places_lliures === 0 && !isSeleccionada(task.id)"
+                :class="{ 'is-selected': isSeleccionada(task.id), 'is-solapada': esSolapaAmbSeleccionada(task) && !isSeleccionada(task.id) }"
+                :disabled="(task.places_lliures === 0 && !isSeleccionada(task.id)) || (esSolapaAmbSeleccionada(task) && !isSeleccionada(task.id))"
                 @click="toggleTasca(task.id)">
                 <div class="task-info">
                   <span class="task-name">{{ task.nom }}</span>
@@ -130,6 +181,9 @@ export default {
                     }">
                     <template v-if="task.places_lliures === 0">Complet</template>
                     <template v-else>{{ task.places_lliures }} places lliures</template>
+                  </span>
+                  <span v-if="esSolapaAmbSeleccionada(task) && !isSeleccionada(task.id)" class="solapa-nota">
+                    ⏱️ Coincideix amb «{{ tasquesQueSolapen(task)[0].nom }}», ja triada
                   </span>
                 </div>
                 <span v-if="isSeleccionada(task.id)" class="check-icon" aria-hidden="true">✓</span>
@@ -237,7 +291,7 @@ export default {
 /* Capçalera de columnes (només escriptori/tablet) */
 .tasks-header {
   display: grid;
-  grid-template-columns: 56px 140px 1fr;
+  grid-template-columns: 110px 140px 1fr;
   gap: 14px;
   padding: 0 0 8px 0;
   color: #6b7280;
@@ -252,7 +306,7 @@ export default {
 /* Fila d'una tasca: grid de 3 columnes en escriptori */
 .task-row {
   display: grid;
-  grid-template-columns: 56px 140px 1fr;
+  grid-template-columns: 110px 140px 1fr;
   gap: 14px;
   align-items: center;
   padding: 6px 0;
@@ -332,6 +386,14 @@ export default {
 .places-low { color: #dc2626; font-weight: 600; }
 .places-full { color: #9ca3af; }
 .btn-task.is-selected .task-places { color: rgba(255,255,255,0.85); }
+
+.solapa-nota {
+  font-size: 0.75rem;
+  color: #b45309;
+  font-weight: 600;
+}
+.btn-task.is-solapada { background-color: #fffbeb; border-color: #fde68a; }
+.btn-task.is-solapada .task-name { color: #92400e; }
 
 .check-icon {
   background-color: #ffffff;
